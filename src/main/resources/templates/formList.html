@@ -1,0 +1,51 @@
+<html lang="kr">
+<head th:replace="fragments/header :: header">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<table id="formTable" class="table table-bordered">
+    <thead>
+    <tr>
+        <th>기안제목</th>
+        <th>프로세스 ID</th>
+        <th>신청 ID</th>
+        <th>신청 시스템</th>
+        <th>기안 상신일</th>
+        <th>기안 완료일</th>
+    </tr>
+    </thead>
+</table>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        var table = $('#formTable').DataTable({
+            "retrieve": true,
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "processing": true,
+            "serverSide": false,
+            "scrollCollapse": true,
+            "ajax": {
+                url: '/api/getFormList',
+                type: 'POST',
+            },
+            "cache": false,
+            columns: [
+                {data: 'subject'},
+                {data: 'processID'},
+                {data: 'applicationID'},
+                {data: 'system'},
+                {data: 'initiatedDate'},
+                {data: 'completedDate'}
+            ]
+        })
+
+        $('#formTable').on('click', 'tbody tr', function () {
+            let data=  table.row(this).data();
+            window.open('https://www.e-iris.com/approval/approval_Form.do?processID=' + data['processID'], '_blank');
+        });
+    });
+</script>

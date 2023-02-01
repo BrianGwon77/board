@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>인탑스 구미사업장 게시판</title>
+    <link rel="stylesheet" href="/css/board-style.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+          integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <header th:replace="~{/board/board-header :: board-header}"></header>
+    <section th:replace="~{/board/board-header :: board-list}"></section>
+    <section class="post-list">
+        <table class="post-table">
+            <thead class="thead">
+                <th>글번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
+            </thead>
+            <tbody>
+                <tr th:each="postDto : ${postDtoList}">
+                    <td th:text="${postDto.pno}"></td>
+                    <td th:text="${postDto.title}" th:onclick="|location.href='@{/board/read(bno=1, pno=${postDto.pno})}'|" class="title-td"></td>
+                    <td th:text="${postDto.writer}"></td>
+                    <td th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${postDto.view_cnt}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <article class="btn-list">
+            <button class="register-btn" onclick="location.href='/board/write'"><i class="fa-solid fa-pen"></i>&nbsp;글쓰기</button>
+        </article>
+    </section>
+    <section>
+        <div class="navi">
+            <a th:if="${pageDto.showPrev}" th:href="@{/board/list(bno=${param.bno},
+             page=${pageDto.page}-1, pageSize=${pageDto.pageSize})}"><i class="fa-solid fa-caret-left"></i></a>
+            <a th:each="num : ${#numbers.sequence(pageDto.beginPage, pageDto.endPage)}" th:text="${num}"
+               th:href="@{/board/list(bno=${param.bno}, page=${num}, pageSize=${pageDto.pageSize})}"/>
+            <a th:if="${pageDto.showNext}" th:href="@{/board/list(bno=${param.bno},
+             page=${pageDto.page}+1, pageSize=${pageDto.pageSize})}"><i class="fa-solid fa-caret-right"></i></a>
+        </div>
+    </section>
+</div>
+<!--<footer class="board-footer">-->
+<!--</footer>-->
+</body>
+</html>

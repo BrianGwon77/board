@@ -1,0 +1,165 @@
+<html>
+
+<head>
+    <title>인탑스 구미사업장 게시판</title>
+    <link rel="stylesheet" href="/css/board-style.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <script src="/ckeditor/ckeditor.js"></script>
+    <style>
+        .ck-editor__editable {
+            min-height: 400px;
+        }
+    </style>
+    <link rel="stylesheet" href="../../static/css/board-style.css">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <header th:replace="~{/board/board-header :: board-header}"></header>
+    <section th:replace="~{/board/board-header :: board-list}"></section>
+    <section class="post">
+        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post">
+            <article class="content-field">
+                <input type="text" placeholder="제목" th:field="*{title}">
+                <div class="field-error" th:if="${#fields.hasErrors('title')}">
+                    <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{title}"></p>
+                </div>
+                <textarea rows=5 cols="50" class="content" id="content" th:field="*{content}"></textarea>
+                <div class="field-error" th:if="${#fields.hasErrors('content')}">
+                    <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{content}"></p>
+                </div>
+            </article>
+            <div class="file-list-div">
+                <input type="file" id="file-input" multiple="multiple" name="files">
+                <label for="file-input" class="file-label"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</label>
+                <div class="file-sub-list-div">
+                    <ul class="file-ul" id="file-ul">
+                    </ul>
+                </div>
+            </div>
+            <article class="check-list">
+                <input type="checkbox" id="secret-check">
+                <label for="secret-check">
+                    비밀글 기능
+                </label>
+                <span class="secret-check-info">
+                    <i class="fa-sharp fa-solid fa-circle-info"></i>&nbsp;&nbsp;비밀글 : 관리자만 글을 읽을 수 있도록 설정합니다.
+                </span>
+                <input type="checkbox" id="comment-allow-check" checked>
+                <label for="comment-allow-check">댓글 허용</label>
+                <span class="secret-check-info"><i class="fa-sharp fa-solid fa-circle-info"></i>&nbsp;&nbsp;
+                    댓글허용 : 다른 사용자가 댓글을 달 수 있게합니다.
+                </span>
+            </article>
+            <input type="hidden" th:field="*{mode}">
+            <article class="writer-info">
+                <input type="text" placeholder="글쓴이" th:field="*{writer}">
+                <input type="password" placeholder="비밀번호" th:field="*{password}">
+                <input type="text" placeholder="태그: 쉼표(,)를 이용하여 복수등록">
+                <div class="field-error" th:if="${#fields.hasErrors('writer')}">
+                    <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{writer}"></p>
+                </div>
+                <div class="field-error" th:if="${#fields.hasErrors('password')}">
+                    <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{password}"></p>
+                </div>
+            </article>
+            <article class="btn-list">
+                <button class="confirm-btn" th:onclick="submit()">확인</button>
+                <button class="cancel-btn">취소</button>
+            </article>
+        </form>
+    </section>
+</div>
+<!--    <footer id="footer">-->
+<!--    </footer>-->
+</body>
+
+</html>
+
+<script>
+
+    let existingFiles = new DataTransfer();
+
+    CKEDITOR.editorConfig = function( config ) {
+        config.toolbarGroups = [
+            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+            { name: 'forms', groups: [ 'forms' ] },
+            '/',
+            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+            { name: 'links', groups: [ 'links' ] },
+            { name: 'insert', groups: [ 'insert' ] },
+            '/',
+            { name: 'styles', groups: [ 'styles' ] },
+            { name: 'colors', groups: [ 'colors' ] },
+            { name: 'tools', groups: [ 'tools' ] },
+            { name: 'others', groups: [ 'others' ] },
+            { name: 'about', groups: [ 'about' ] }
+        ];
+
+    };
+
+    CKEDITOR.replace( 'content' , {
+        height: '500px',
+    });
+
+    function submit() {
+        $('#form').submit();
+    }
+
+    document.getElementById('file-input').addEventListener('change', function(event) {
+
+        let target = event.target;
+
+        let ul = document.getElementById('file-ul');
+        ul.innerHTML = '';
+
+        Array.from(target.files).forEach(file => {
+            existingFiles.items.add(file);
+        });
+
+        target.files = existingFiles.files;
+
+        Array.from(target.files).forEach(file => {
+
+            let li = document.createElement('li');
+            let icon = document.createElement('i');
+            icon.className = 'fa-solid fa-x';
+
+            icon.addEventListener('click', function(event) {
+                let target = event.target;
+                removeFiles(target.parentNode.getAttribute('file-name'));
+                target.parentNode.remove();
+            })
+
+            li.innerHTML = file.name + `&nbsp;&nbsp;`;
+            li.setAttribute('file-name', file.name);
+            li.appendChild(icon);
+            ul.appendChild(li);
+        })
+
+    });
+
+    function removeFiles(name) {
+
+        let dt = new DataTransfer();
+        let fileInput = document.getElementById('file-input');
+
+        Array.from(fileInput.files)
+            .filter(file => file.name != name)
+            .forEach(file => {
+                dt.items.add(file);
+            })
+
+        fileInput.files = dt.files;
+        existingFiles.files = dt.files;
+
+    }
+
+</script>

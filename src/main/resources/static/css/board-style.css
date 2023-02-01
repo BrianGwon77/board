@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    padding-bottom: 100px;
+}
+
+.container {
+    margin: auto;
+    width: 1000px;
+    height: 100%;
+}
+
+.container header {
+    padding: 30px;
+    overflow: hidden;
+}
+
+.container h1 {
+    display: inline-block;
+    float: left;
+    margin: 0px;
+    height: 50px;
+    line-height: 50px;
+}
+
+.container .side {
+    display: inline-block;
+    float: right;
+    padding-top: 13px;
+}
+
+.container h1 {
+    cursor: pointer;
+}
+
+button {
+    cursor: pointer;
+    background-color: #F38B3C;
+    border: 0px;
+    color: white;
+    width: 70px;
+    height: 30px;
+    font-weight: 550;
+}
+
+button:hover {
+    box-shadow: 0 0 5px orange;
+}
+
+.container .side input[type=text] {
+    height: 35px;
+    margin-left: 20px;
+    margin-right: 5px;
+    padding-left: 10px;
+
+}
+
+.search-keyword:focus {
+    border: 1px solid orange;
+    outline: none;
+}
+
+.search-keyword:focus::placeholder {
+    color: transparent;
+}
+
+.board-list {
+    background-color: #fff;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+.board-list a {
+    position: relative;
+    padding: 20px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    color: #222;
+    font-weight: 600;
+    width: 150px;
+    box-sizing: border-box;
+    transition: 0.5s;
+}
+
+.board-list a:before,
+.board-list a:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    background-color: orange;
+    height: 2px;
+    left: 50%;
+    bottom: 10%;
+    transition: 0.5s
+}
+
+.board-list a:hover:before {
+    left: 0%;
+    width: 50%;
+}
+
+.board-list a:hover:after {
+    left: 49%;
+    width: 50%;
+}
+
+.board-list a:hover {
+    color: orange;
+}
+
+.post-list {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.board-footer {
+    background-color: #F8F8F8;
+    height: 100px;
+}
+
+.post-table {
+    border-bottom: 3px double lightgray;
+    border-top: 3px double lightgray;
+    margin-top: 50px;
+    padding: 20px;
+    border-spacing: 0px;
+}
+
+.post-table th,
+.post-table td {
+    border-bottom: 1px solid lightgray;
+    margin: 0;
+    font-weight: normal;
+    padding: 10px;
+    text-align: center;
+}
+
+.post-table thead th:nth-child(1),
+.post-table tr td:nth-child(1) {
+    width: 100px;
+}
+
+.post-table thead th:nth-child(2),
+.post-table tr td:nth-child(2) {
+    width: 600px;
+}
+
+.post-table tr td:nth-child(2):hover {
+    text-decoration: underline;
+}
+
+.post-table thead th:nth-child(3),
+.post-table tr td:nth-child(2) {
+    width: 100px;
+}
+
+
+.post-table thead th:nth-child(4),
+.post-table tr td:nth-child(2) {
+    width: 100px;
+}
+
+.post-table thead th:nth-child(5),
+.post-table tr td:nth-child(2) {
+    width: 100px;
+}
+
+
+.navi {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.navi a {
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    padding: 10px;
+    opacity: 0.6;
+    transition: 0.5s;
+    font-weight: 600;
+}
+
+.navi a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.post {
+    height: 800px;
+    padding-top: 50px;
+}
+
+.content-field input[type=text] {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 30px;
+    height: 40px;
+    padding-left: 10px;
+}
+
+.btn-list {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    float: right;
+}
+
+.check-list {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 13px;
+}
+
+.writer-info input {
+    width: 100px;
+    height: 30px;
+    border: 1px solid lightgray;
+    padding-left: 10px;
+}
+
+.writer-info input:nth-child(3) {
+    width: 350px;
+}
+
+.file-list-div {
+    margin-top: 10px;
+    padding: 30px;
+    background-color: #F8F8F8;
+    border-radius: 2px;
+}
+
+.file-add-btn {
+    width: 100px;
+}
+
+.certificate {
+    position: relative;
+    height: 800px;
+}
+
+.certificate-form {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 100px;
+    border: 2px solid lightgray;
+}
+
+.certificate input {
+    transform: translate(0, -6%);
+    width: 100px;
+    height: 30px;
+    border: 1px solid #F8F8F8;
+    padding-left: 10px;
+}
+
+.check-list {
+    position: relative;
+}
+
+.check-list .secret-check-info {
+    position: absolute;
+    top: -30px;
+    right: 101%;
+    background-color: #F38B3C;
+    color: white;
+    padding: 10px;
+    width: 300px;
+    opacity: 0;
+    transition: 0.5s;
+    border-radius: 5px;
+}
+
+.certificate-form a {
+    display: block;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.check-list label:hover + span
+{
+    opacity: 1;
+}
+
+.field-error {
+    height: 50px;
+    color: red;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.field-error p {
+    display :inline-block;
+}
+
+.title-td {
+    cursor: pointer;
+}
+
+input[type=file] {
+    display: none;
+}
+
+.file-label {
+    background-color: #F38B3C;
+    display: inline-block;
+    width: 110px;
+    height: 25px;
+    text-align: center;
+    border: 0px;
+    color: white;
+    padding: 5px;
+}
+
+.file-sub-list-div {
+    margin-top: 10px;
+    border-top: 1px solid gray;
+    padding: 5px;
+}

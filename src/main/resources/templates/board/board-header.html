@@ -1,0 +1,13 @@
+<header th:fragment="board-header">
+    <h1 onclick="location.href='/board/list?bno=1'">INTOPS Board</h1>
+    <div class="side">
+        <button class="login-btn"><i class="fa-solid fa-user"></i>&nbsp;로그인</button>
+        <input class="search-keyword" type="text" placeholder="검색어를 입력하세요.">
+        <button class="search-btn"><i class="fa-sharp fa-solid fa-magnifying-glass"></i>&nbsp;검색</button>
+    </div>
+</header>
+<section class="board-list" th:fragment="board-list">
+    <a th:href="@{/board/list(bno=1)}">공지사항</a>
+    <a th:href="@{/board/list(bno=1)}">자유게시판</a>
+    <a th:href="@{/board/list(bno=1)}">FAQ</a>
+</section>

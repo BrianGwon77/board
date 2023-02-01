@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <title>인탑스 구미사업장 게시판</title>
+    <link rel="stylesheet" href="/css/board-style.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <script src="/ckeditor/ckeditor.js"></script>
+    <script src="/ckeditor/config.js"></script>
+    <link rel="stylesheet" href="../../static/css/board-style.css">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <header th:replace="~{/board/board-header :: board-header}"></header>
+    <section th:replace="~{/board/board-header :: board-list}"></section>
+    <section class="post">
+        <article class="content-field">
+            <a th:text="${postDto.title}" style="display: block; border-bottom:1px solid black; margin-bottom: 20px; padding: 10px;"/>
+            <textarea rows=5 cols="50" class="content" id="content" th:utext="${postDto.content}"></textarea>
+        </article>
+        <article class="file-list">
+            <button class="file-add-btn"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</button>
+        </article>
+        <article class="btn-list">
+            <button class="confirm-btn" th:onclick="|location.href='@{/board/list(bno=${postDto.bno})}'|">목록</button>
+            <button class="confirm-btn" th:onclick="|location.href='@{/board/certificate(bno=${postDto.bno}, pno=${postDto.pno}, mode='MODIFY')}'|">수정</button>
+            <button class="confirm-btn"  th:onclick="|location.href='@{/board/certificate(bno=${postDto.bno}, pno=${postDto.pno}, mode='DELETE')}'|">삭제</button>
+        </article>
+        </form>
+    </section>
+</div>
+</body>
+
+</html>
+
+<script>
+
+    CKEDITOR.replace('content', {
+        toolbarGroups: [
+            {name: 'document', groups: ['mode', 'document', 'doctools']},
+            {name: 'clipboard', groups: ['clipboard', 'undo']},
+            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
+            {name: 'forms', groups: ['forms']},
+            {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
+            {name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph']},
+            {name: 'links', groups: ['links']},
+            {name: 'insert', groups: ['insert']},
+            {name: 'styles', groups: ['styles']},
+            {name: 'colors', groups: ['colors']},
+            {name: 'tools', groups: ['tools']},
+            {name: 'others', groups: ['others']},
+            {name: 'about', groups: ['about']}
+        ],
+        removeButtons: 'FontSize,NewPage,Templates,Cut,Copy,Paste,PasteText,PasteFromWord,Redo,Undo,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Bold,CopyFormatting,RemoveFormat,Italic,Underline,Strike,Subscript,Superscript,NumberedList,Outdent,Indent,BulletedList,Blockquote,CreateDiv,JustifyLeft,BidiLtr,Language,JustifyCenter,BidiRtl,JustifyRight,JustifyBlock,Anchor,Unlink,Link,Image,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,Font,Format,Styles,TextColor,BGColor,About',
+        height: '500px',
+        readOnly: true,
+    });
+
+</script>
