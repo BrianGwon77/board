@@ -13,6 +13,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -61,7 +62,7 @@ public class BoardController {
     }
 
     @PostMapping("/write.do")
-    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, Model model) {
+    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, MultipartFile[] files, Model model) {
 
         if (!bindingResult.hasErrors()) {
 

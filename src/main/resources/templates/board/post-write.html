@@ -22,7 +22,7 @@
     <header th:replace="~{/board/board-header :: board-header}"></header>
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
-        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post">
+        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post" enctype="multipart/form-data">
             <article class="content-field">
                 <input type="text" placeholder="제목" th:field="*{title}">
                 <div class="field-error" th:if="${#fields.hasErrors('title')}">
@@ -36,8 +36,9 @@
             <div class="file-list-div">
                 <input type="file" id="file-input" multiple="multiple" name="files">
                 <label for="file-input" class="file-label"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</label>
-                <div class="file-sub-list-div">
-                    <ul class="file-ul" id="file-ul">
+                <div class="file-sub-list-div" id="file-list-div">
+                    <ul class="file-list" id="file-list" style="list-style-image : url(이미지 주소);">
+
                     </ul>
                 </div>
             </div>
@@ -81,8 +82,6 @@
 </html>
 
 <script>
-
-    let existingFiles = new DataTransfer();
 
     CKEDITOR.editorConfig = function (config) {
         config.toolbarGroups = [
@@ -182,7 +181,7 @@
             .filter((file, index) => index != targetIndex)
             .forEach(file => dt.items.add(file));
 
-//aa
+
         document.getElementById('file-input').files = dt.files;
 
     }
