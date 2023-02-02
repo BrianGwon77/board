@@ -5,6 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class FileDto {
-    private MultipartFile[] uploadfiles;
+    private MultipartFile[] uploadFiles;
     private String[] deleteFiles;
 }

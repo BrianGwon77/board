@@ -27,7 +27,7 @@ public class BoardController {
     private final PostService postService;
 
     private final int CREATE = 0;
-    private final int MODIFY = 1;
+    private final int UPDATE = 1;
 
     @GetMapping("/list")
     public String list(@RequestParam(required = true) int bno,
@@ -70,13 +70,13 @@ public class BoardController {
 
         if (!bindingResult.hasErrors()) {
 
-            if (mode == CREATE) {
+            if (mode == 0) {
                 postService.register(postDto, fileDto);
             } else {
                 postService.update(postDto, fileDto);
             }
 
-            return "redirect:/board/list?bno=1";
+            return "redirect:/board/list?bno=" + postDto.getBno();
         }
         return "/board/post-write";
     }
@@ -101,6 +101,7 @@ public class BoardController {
 
         if (selectedPostDto.getWriter().equals(postDto.getWriter()) && selectedPostDto.getPassword().equals(postDto.getPassword())) {
             model.addAttribute("postDto", selectedPostDto);
+            model.addAttribute("mode", UPDATE);
             return "/board/post-write";
         }
 

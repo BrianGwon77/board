@@ -22,7 +22,8 @@
     <header th:replace="~{/board/board-header :: board-header}"></header>
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
-        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post">
+        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="mode" th:value="${mode}">
             <article class="content-field">
                 <input type="text" placeholder="제목" th:field="*{title}">
                 <div class="field-error" th:if="${#fields.hasErrors('title')}">
@@ -34,7 +35,7 @@
                 </div>
             </article>
             <div class="file-list-div">
-                <input type="file" id="file-input" multiple="multiple" name="files">
+                <input type="file" id="file-input" multiple="multiple" name="uploadFiles">
                 <label for="file-input" class="file-label"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</label>
                 <div class="file-sub-list-div">
                     <ul class="file-ul" id="file-ul">

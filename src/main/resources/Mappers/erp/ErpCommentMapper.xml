@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.spring.Mapper.erp.ErpPostMapper">
+<mapper namespace="com.example.spring.Mapper.erp.ErpCommentMapperMapper">
 
     <resultMap id="commentResultMap" type="com.example.spring.Dto.CommentDto">
         <result property="cno" column="cno"></result>
@@ -32,7 +32,7 @@
         WHERE DELETE_FLAG = 'N'
     </sql>
 
-    <select id="selectListByPost" resultType="commentResultMap" parameterType="int">
+    <select id="selectListByPost" resultMap="commentResultMap" parameterType="int">
         <include refid="select"/>
         AND PNO = #{pno}
     </select>

@@ -38,11 +38,12 @@ public class PostServiceImpl implements PostService {
         // 1. 게시글 정보등록
         postMapper.insert(postDto);
 
-        // 2. 파일 서버 업로드
-        List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadfiles());
-
-        // 3. AttachmentDto DB 등록
-        attachmentMapper.insertList(attachmentDtoList);
+        if (fileDto.getUploadFiles() != null) {
+            // 2. 파일 서버 업로드
+            List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
+            // 3. AttachmentDto DB 등록
+            attachmentMapper.insertList(attachmentDtoList);
+        }
 
         return 0;
 
@@ -55,14 +56,18 @@ public class PostServiceImpl implements PostService {
         // 1. 게시글 정보등록
         postMapper.update(postDto);
 
-        // 2. 파일 서버 업로드
-        List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadfiles());
 
-        // 3. AttachmentDto DB 등록
-        attachmentMapper.insertList(attachmentDtoList);
+        if (fileDto.getDeleteFiles() != null) {
+            // 2. 파일 서버 업로드
+            List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
+            // 3. AttachmentDto DB 등록
+            attachmentMapper.insertList(attachmentDtoList);
+        }
 
-        // 4. 삭제대상 파일 제거
-        attachmentMapper.deleteList(fileDto.getDeleteFiles());
+        if (fileDto.getDeleteFiles() != null) {
+            // 4. 삭제대상 파일 제거
+            attachmentMapper.deleteList(fileDto.getDeleteFiles());
+        }
 
         return 0;
 
@@ -144,7 +149,7 @@ public class PostServiceImpl implements PostService {
             int fileSize = (int) file.getSize();
             String fileName = uuids[0];
             String fileOriginName = file.getOriginalFilename();
-            String extension = file.getOriginalFilename().substring(file.getName().lastIndexOf("."), file.getName().length());
+            String extension = fileOriginName.substring(fileOriginName.lastIndexOf("."), fileOriginName.length());
             String filePath = folderPath + File.separator + fileName + extension;
 
             File newFile = new File(filePath);

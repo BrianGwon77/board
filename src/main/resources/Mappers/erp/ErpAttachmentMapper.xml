@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.spring.Mapper.erp.ErpPostMapper">
+<mapper namespace="com.example.spring.Mapper.erp.ErpAttachmentMapper">
 
     <sql id="select">
         SELECT ANO
@@ -23,8 +23,8 @@
         AND PNO = #{pno}
     </select>
 
-    <insert id="insert" parameterType="java.util.List">
-        INSERT INTO SPRING_COMMENT (
+    <insert id="insertList" parameterType="java.util.List">
+        INSERT INTO SPRING_ATTACHMENT (
         PNO
         , FILE_NAME
         , FILE_ORIGIN_NAME
@@ -32,7 +32,7 @@
         , FILE_SIZE
         )
         VALUES
-        <foreach collection="uploadFileList" item="item" separator=",">
+        <foreach collection="attachmentDtoList" item="item" separator=",">
             (
             #{item.pno}
             , #{item.fileName}
