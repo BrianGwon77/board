@@ -1,5 +1,6 @@
 package com.example.spring.Controller;
 
+import com.example.spring.Dto.FileDto;
 import com.example.spring.Dto.PageDto;
 import com.example.spring.Dto.PostDto;
 import com.example.spring.Exception.BadRequestException;
@@ -24,14 +25,17 @@ public class BoardController {
 
     private final PostService postService;
 
+    private final int CREATE = 0;
+    private final int MODIFY = 1;
+
     @GetMapping("/list")
-    public String list( @RequestParam(required=true) int bno,
-                        @RequestParam(required=false, defaultValue = "1") int page,
-                        @RequestParam(required=false, defaultValue = "10") int pageSize,
-                       Model model){
+    public String list(@RequestParam(required = true) int bno,
+                       @RequestParam(required = false, defaultValue = "1") int page,
+                       @RequestParam(required = false, defaultValue = "10") int pageSize,
+                       Model model) {
 
         // 시작 글 번호
-        int offset = (page-1)*pageSize + 1;
+        int offset = (page - 1) * pageSize + 1;
 
         // 마지막 글 번호
         int limit = page * pageSize;
@@ -53,38 +57,37 @@ public class BoardController {
     }
 
     @GetMapping("/write")
-    public String write(Model model){
+    public String write(Model model) {
         PostDto postDto = new PostDto();
-        postDto.setMode("CREATE");
         model.addAttribute("postDto", postDto);
+        model.addAttribute("mode", CREATE);
         return "/board/post-write";
     }
 
     @PostMapping("/write.do")
-    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, Model model) {
+    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, FileDto fileDto, int mode, Model model) {
 
         if (!bindingResult.hasErrors()) {
 
-            if (postDto.getMode().equals("CREATE"))
+            if (mode == CREATE) {
                 postService.register(postDto);
-            else
+            } else {
                 postService.update(postDto);
+            }
 
             return "redirect:/board/list?bno=1";
-
         }
-
         return "/board/post-write";
     }
 
     @GetMapping("/certificate")
-    public String certificate(PostDto postDto, Model model){
+    public String certificate(PostDto postDto, Model model) {
         model.addAttribute("postDto", postDto);
         return "/board/certificate";
     }
 
     @GetMapping("/read")
-    public String read(int bno, int pno, Model model){
+    public String read(int bno, int pno, Model model) {
         PostDto postDto = postService.selectOne(bno, pno);
         model.addAttribute("postDto", postDto);
         return "/board/post-read";

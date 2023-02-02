@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.spring.Mapper.erp.ErpPostMapper">
+
+    <resultMap id="commentResultMap" type="com.example.spring.Dto.CommentDto">
+        <result property="cno" column="cno"></result>
+        <result property="pno" column="pno"></result>
+        <result property="parent_cno" column="parent_cno"></result>
+        <result property="receiver" column="receiver"></result>
+        <result property="writer" column="writer"></result>
+        <result property="password" column="password"></result>
+        <result property="reg_date" column="reg_date"></result>
+        <result property="updt_date" column="updt_date"></result>
+        <collection property="commentDtoList" column="pno" select="selectReplyCommentList" javaType="java.util.List"
+                    ofType="com.example.spring.Dto.CommentDto"></collection>
+    </resultMap>
+
+    <sql id="select">
+        SELECT CNO
+             , PNO
+             , PARENT_CNO
+             , RECEIVER
+             , CONTENT
+             , WRITER
+             , PASSWORD
+             , REG_DATE
+             , UPDT_DATE
+        FROM SPRING_COMMENT
+        WHERE DELETE_FLAG = 'N'
+    </sql>
+
+    <select id="selectListByPost" resultType="commentResultMap" parameterType="int">
+        <include refid="select"/>
+        AND PNO = #{pno}
+    </select>
+
+    <insert id="insert" parameterType="com.example.spring.Dto.CommentDto">
+        INSERT INTO SPRING_COMMENT ( PNO
+                                   , PARENT_CNO
+                                   , RECEIVER
+                                   , CONTENT
+                                   , WRITER
+                                   , PASSWORD)
+        VALUES ( #{pno}
+               , #{parent_cno}
+               , #{receiver}
+               , #{content}
+               , #{writer}
+               , #{password})
+    </insert>
+
+    <delete id="delete">
+        UPDATE SPRING_COMMENT
+        SET DELETE_FLAG = 'Y'
+            , UPDT_DATE = GETDATE()
+        WHERE CNO = #{cno}
+    </delete>
+
+    <delete id="deleteListByPost">
+        UPDATE SPRING_COMMENT
+        SET DELETE_FLAG = 'Y'
+          , UPDT_DATE = GETDATE()
+        WHERE PNO = #{pno}
+    </delete>
+
+</mapper>

@@ -19,7 +19,8 @@
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
         <article class="content-field">
-            <a th:text="${postDto.title}" style="display: block; border-bottom:1px solid black; margin-bottom: 20px; padding: 10px;"/>
+            <a th:text="${postDto.title}"
+               style="display: block; border-bottom:1px solid black; margin-bottom: 20px; padding: 10px;"/>
             <textarea rows=5 cols="50" class="content" id="content" th:utext="${postDto.content}"></textarea>
         </article>
         <article class="file-list">
@@ -27,9 +28,52 @@
         </article>
         <article class="btn-list">
             <button class="confirm-btn" th:onclick="|location.href='@{/board/list(bno=${postDto.bno})}'|">목록</button>
-            <button class="confirm-btn" th:onclick="|location.href='@{/board/certificate(bno=${postDto.bno}, pno=${postDto.pno}, mode='MODIFY')}'|">수정</button>
-            <button class="confirm-btn"  th:onclick="|location.href='@{/board/certificate(bno=${postDto.bno}, pno=${postDto.pno}, mode='DELETE')}'|">삭제</button>
+            <button class="confirm-btn"
+                    th:onclick="|location.href='@{/board/certificate(bno=${postDto.bno}, pno=${postDto.pno}, mode='MODIFY')}'|">
+                수정
+            </button>
+            <button class="confirm-btn"
+                    th:onclick="|location.href='@{/board/certificate(bno=${postDto.bno}, pno=${postDto.pno}, mode='DELETE')}'|">
+                삭제
+            </button>
         </article>
+        </form>
+    </section>
+    <section class="comment-list-section">
+        <div class="comment-unit" th:each="commentDto : ${commentDtoList}">
+            <p class="comment-list-writer">관리자</p>
+            <p class="comment-list-content" th:onclick="add_reply_form(this)">답글입니다.</p>
+            <p class="remove-btn"><i class="fa-solid fa-xmark"></i></p>
+            <div class="reply-comment-unit" th:each="replyCommentDto : ${commentDto.replyCommentList}">
+                <p class="comment-list-writer"><i class="fa-brands fa-replyd"></i>&nbsp;권도영</p>
+                <p class="comment-list-content"><span class="to_user">(관리자)</span>답글입니다.</p>
+                <p class="remove-btn" cno="1" onclick="addCommentRemoveForm(this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </p>
+            </div>
+        </div>
+        <div class="comment-unit" th:each="commentDto : ${commentDtoList}">
+            <p class="comment-list-writer">관리자</p>
+            <p class="comment-list-content" th:onclick="add_reply_form(this)">답글입니다</p>
+            <div class="reply-comment-unit" th:each="replyCommentDto : ${commentDto.replyCommentList}">
+                <p class="comment-list-writer"><i class="fa-brands fa-replyd"></i>&nbsp;권도영</p>
+                <p class="comment-list-content" th:onclick="add_reply_form(this)">답글입니다.</p>
+            </div>
+            <input type="hidden" name="test" value="hi">
+        </div>
+    </section>
+    <section class="comment-section">
+        <form th:action="@{/board/write/comment.do}" th:object="${commentDto}" th:method="post" th:id="form">
+            <article class="comment-writer-area">
+                <input type="text" class="comment-writer" placeholder="작성자" th:field="*{writer}">
+                <input type="text" class="comment-password" placeholder="비밀번호" th:field="*{password}">
+            </article>
+            <article class="comment-editor-area">
+                <textarea class="comment-editor" th:field="*{content}"></textarea>
+                <input type="hidden" th:field="*{pno}">
+                <button class="comment-reg-btn"><i class="fa-solid fa-comments" th:onclick="submit()"></i>&nbsp;등록
+                </button>
+            </article>
         </form>
     </section>
 </div>
@@ -40,24 +84,189 @@
 <script>
 
     CKEDITOR.replace('content', {
-        toolbarGroups: [
-            {name: 'document', groups: ['mode', 'document', 'doctools']},
-            {name: 'clipboard', groups: ['clipboard', 'undo']},
-            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
-            {name: 'forms', groups: ['forms']},
-            {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
-            {name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph']},
-            {name: 'links', groups: ['links']},
-            {name: 'insert', groups: ['insert']},
-            {name: 'styles', groups: ['styles']},
-            {name: 'colors', groups: ['colors']},
-            {name: 'tools', groups: ['tools']},
-            {name: 'others', groups: ['others']},
-            {name: 'about', groups: ['about']}
-        ],
-        removeButtons: 'FontSize,NewPage,Templates,Cut,Copy,Paste,PasteText,PasteFromWord,Redo,Undo,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Bold,CopyFormatting,RemoveFormat,Italic,Underline,Strike,Subscript,Superscript,NumberedList,Outdent,Indent,BulletedList,Blockquote,CreateDiv,JustifyLeft,BidiLtr,Language,JustifyCenter,BidiRtl,JustifyRight,JustifyBlock,Anchor,Unlink,Link,Image,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,Font,Format,Styles,TextColor,BGColor,About',
+        toolbarGroups: [{
+            name: 'document',
+            groups: ['mode', 'document', 'doctools']
+        }, ],
         height: '500px',
-        readOnly: true,
+        resize_enabled: false,
+        removePlugins: 'elementspath',
     });
+
+    function submit() {
+        $('#form').submit();
+    }
+
+    function add_reply_form(current_element) {
+
+        alert('');
+
+        var comment_section = document.createElement('section');
+        var parent_cno = current_element.getAttribute("id");
+        comment_section.setAttribute("class", "comment-section");
+
+        var replyForm = document.createElement('form');
+
+        // set attribute (form)
+        replyForm.id = 'replyForm';
+        replyForm.name = 'replyForm';
+        replyForm.method = 'post';
+        replyForm.action = '/board/write/comment.do';
+
+        var writer_area = document.createElement('article');
+        writer_area.setAttribute("class", "comment-writer-area");
+
+        var comment_writer = document.createElement('input');
+
+        comment_writer.setAttribute("type", "text");
+        comment_writer.setAttribute("name", "writer");
+        comment_writer.setAttribute("class", "comment-writer");
+        comment_writer.setAttribute("placeholder", "작성자");
+
+        var comment_password = document.createElement('input');
+
+        comment_password.setAttribute("type", "text");
+        comment_password.setAttribute("name", "password");
+        comment_password.setAttribute("class", "comment-password");
+        comment_password.setAttribute("placeholder", "비밀번호");
+
+        writer_area.appendChild(comment_writer);
+        writer_area.appendChild(comment_password);
+
+        ///////////////////////////////////////////////////////
+
+        var comment_cno = document.createElement('input');
+        comment_cno.setAttribute("type", "hidden");
+        comment_cno.setAttribute("name", "parent_cno");
+        comment_cno.setAttribute("value", parent_cno);
+
+        var editor_area = document.createElement('article');
+        editor_area.setAttribute("class", "comment-editor-area");
+
+        var comment_editor = document.createElement('textarea');
+        comment_editor.setAttribute("class", "comment-editor");
+        comment_editor.setAttribute("name", "content");
+
+
+        var comment_reg_btn = document.createElement('button');
+        comment_reg_btn.setAttribute("class", "comment-reg-btn");
+        comment_reg_btn.innerHTML = `<i class="fa-solid fa-comments"></i>&nbsp;등록`;
+        comment_reg_btn.click = function() {
+            document.getElementById("replyForm").submit();
+        };
+
+        editor_area.appendChild(comment_editor);
+        editor_area.appendChild(comment_reg_btn);
+        editor_area.appendChild(comment_cno);
+
+        replyForm.appendChild(writer_area);
+        replyForm.appendChild(editor_area);
+
+        comment_section.setAttribute("name", "reply_comment_section");
+        comment_section.appendChild(replyForm);
+
+        var array = document.getElementsByName("reply_comment_section");
+
+        for (var i = 0; i < array.length; i++)
+            array[i].remove();
+
+        current_element.insertAdjacentElement('afterend', comment_section);
+
+    }
+
+    function reload() {
+        location.reload();
+    }
+
+    function show_remove_form(current_element) {
+        let remove_form = current_element.nextElementSibling;
+        remove_form.style.display = 'block';
+    }
+
+    function send_remove_form(current_element) {
+        let remove_form = current_element.parentElement;
+        remove_form.submit();
+    }
+
+    /**
+     삭제 폼 동적 생성
+     1. 패스워드 입력란.
+     2. 확인버튼
+     3. 취소버튼
+     **/
+
+    /** 댓글 삭제 폼 동적 생성 함수 **/
+    function addCommentRemoveForm(currentNode) {
+
+        // form element 생성 및 초기화
+        let commentRemoveForm = document.createElement('form');
+        commentRemoveForm.method = 'post';
+        commentRemoveForm.action = '/board/delete/comment';
+        commentRemoveForm.className = 'comment-remove-form';
+
+        // input element 생성 및 초기화
+        let passwordInput = document.createElement('input');
+        passwordInput.name = "password";
+        passwordInput.className = 'rectangular-input';
+        passwordInput.setAttribute("type", "password");
+
+        // 확인 버튼
+        let submitButton = document.createElement('button');
+        submitButton.innerHTML = '확인';
+        submitButton.addEventListener('click', function(e) {
+
+            e.preventDefault();
+
+            if (isEmpty(passwordInput))
+                alert("비밀번호를 입력해주세요");
+
+            else  {
+
+                let jsonData = new Object();
+
+                // cno, password 정보
+
+                jsonData.password = passwordInput.value;
+                jsonData.cno = currentNode.getAttribute("cno");
+
+                $.ajax ({
+                    type : "POST",
+                    url : "http://localhost/board/delete/comment.do",
+                    contentType: "application/json; charset=UTF-8",
+                    data : JSON.stringify(jsonData),
+                    success: function(data) {
+                        if(data.result == "success") {
+                            alert("댓글이 삭제되었습니다.")
+                            location.reload();
+                        }
+                        else {
+                            alert("비밀번호가 일치하지 않습니다.");
+                        }
+                    },
+                    error: function(error) {
+                        alert("에러가 발생하였습니다.");
+                    },
+                })
+            }})
+
+        // 취소 버튼
+        let cancelButton = document.createElement('button');
+        cancelButton.innerHTML = '취소';
+        cancelButton.addEventListener('click', function() {
+            commentRemoveForm.remove();
+        })
+
+        commentRemoveForm.appendChild(passwordInput);
+        commentRemoveForm.appendChild(submitButton);
+        commentRemoveForm.appendChild(cancelButton);
+
+        currentNode.insertAdjacentElement('afterend', commentRemoveForm);
+
+    }
+
+    function isEmpty(currentElement) {
+        return (currentElement.value == null);
+    }
+
 
 </script>

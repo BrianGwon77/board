@@ -1,14 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
 
+@font-face {
+    font-family: 'Gmarket-Sans';
+    src: url('fonts/GmarketSansTTF/GmarketSansTTFBold.ttf') format('truetype');
+    font-family: 'Cafe24Danjunghae';
+    src: url('fonts/Cafe24DanjunghaeTTF/Cafe24Danjunghae.ttf') format('truetype');
+    font-family: 'NanumSquare';
+    src: url('fonts/NanumSquareTTF/NanumSquareRoundR.ttf') format('truetype');
+    font-family: 'NanumSquareEB';
+    src: url('fonts/NanumSquareTTF/NanumSquareRoundEB.ttf') format('truetype');
+}
+
+* {
+    font-family: 'NanumSquare';
+}
+
+
 body {
-    font-family: "Noto Sans KR", sans-serif;
     padding-bottom: 100px;
 }
+
+
 
 .container {
     margin: auto;
     width: 1000px;
-    height: 100%;
 }
 
 .container header {
@@ -95,6 +111,7 @@ button:hover {
     bottom: 10%;
     transition: 0.5s
 }
+
 
 .board-list a:hover:before {
     left: 0%;
@@ -205,7 +222,6 @@ button:hover {
 
 .btn-list {
     margin-top: 20px;
-    margin-bottom: 20px;
     float: right;
 }
 
@@ -226,7 +242,7 @@ button:hover {
     width: 350px;
 }
 
-.file-list-div {
+.file-list {
     margin-top: 10px;
     padding: 30px;
     background-color: #F8F8F8;
@@ -282,8 +298,7 @@ button:hover {
     margin-bottom: 15px;
 }
 
-.check-list label:hover + span
-{
+.check-list label:hover + span {
     opacity: 1;
 }
 
@@ -295,30 +310,125 @@ button:hover {
 }
 
 .field-error p {
-    display :inline-block;
+    display: inline-block;
 }
 
 .title-td {
     cursor: pointer;
 }
 
-input[type=file] {
-    display: none;
+.comment-list-section {
+    padding: 15px;
+    border: 1px solid lightgray;
+    font-size: 14px;
+    margin-bottom: 20px;
 }
 
-.file-label {
-    background-color: #F38B3C;
+.comment-unit {
+    position: relative;
+    border-bottom: 1px solid lightgray;
+}
+
+.reply-comment-unit {
+    position: relative;
+}
+
+.comment-section {
+    position: relative;
+    background-color: #f8f8f8;
+    height: 100px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.comment-remove-form {
+    position: absolute;
+    top: 30%;
+    right: -27%;
+    padding: 10px;
+    border: 1px solid black;
+    width: 310px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rectangular-input {
+    padding: 5px;
+    padding-left: 10px;
+    border-radius: 0px;
+    border: 1px solid lightgray;
+}
+
+.comment-remove-password {
+    padding: 5px;
+}
+
+
+.comment-writer-area {
+    width: 15%;
+    box-sizing: border-box;
+    height: inherit;
+    padding: 13px;
     display: inline-block;
-    width: 110px;
-    height: 25px;
-    text-align: center;
-    border: 0px;
-    color: white;
-    padding: 5px;
 }
 
-.file-sub-list-div {
-    margin-top: 10px;
-    border-top: 1px solid gray;
+.comment-writer-area input[type=text] {
+    display: block;
     padding: 5px;
+    width: 100%;
+    border-radius: 0px;
+    border: 1px solid lightgray;
+}
+
+.comment-writer-area .comment-writer {
+    margin-bottom: 10px;
+}
+
+.comment-editor-area {
+    position: absolute;
+    height: 100%;
+    width: 84.6%;
+    box-sizing: border-box;
+    padding: 13px;
+    display: inline-block;
+}
+
+.comment-editor {
+    width: 90%;
+    height: 100%;
+    border-radius: 0px;
+    border: 1px solid lightgray;
+}
+
+
+.comment-reg-btn {
+    position: absolute;
+    bottom: 13%;
+    right: 0.5%;
+}
+
+.comment-list-section p {
+    display: inline-block;
+    padding: 3px;
+}
+
+.comment-list-writer {
+    float: left;
+    width: 10%;
+}
+
+.remove-btn {
+    float: right;
+    cursor: pointer;
+}
+
+.comment-list-content {
+    width: 80%;
+}
+
+.to_user {
+    margin-right: 10px;
+    color: gray;
+    font-weight: 500;
 }

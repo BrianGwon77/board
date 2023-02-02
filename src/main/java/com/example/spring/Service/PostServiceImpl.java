@@ -1,27 +1,80 @@
 package com.example.spring.Service;
 
-import com.example.spring.Dto.PageDto;
-import com.example.spring.Dto.PostDto;
+import com.example.spring.Dto.*;
 import com.example.spring.Exception.BadRequestException;
 import com.example.spring.Exception.PasswordNotMatchedException;
+import com.example.spring.Mapper.erp.ErpCommentMapper;
 import com.example.spring.Mapper.erp.ErpPostMapper;
 import com.example.spring.Service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final ErpPostMapper postMapper;
+    private final ErpCommentMapper erpCommentMapper;
+
+    @Value("${spring.board.folder-path}")
+    String folderPath;
+
+    @Value("${spring.board.storage-name}")
+    String storageName;
 
     @Override
-    public int register(PostDto postDto) {
-        return postMapper.insert(postDto);
+    @Transactional(rollbackFor = Exception.class)
+    public int register(PostDto postDto, FileDto fileDto) throws IOException {
+
+        // 1. 게시글 정보등록
+        postMapper.insert(postDto);
+
+        MultipartFile[] uploadFiles = fileDto.getUploadfiles();
+
+        List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
+
+        int pno = postDto.getPno();
+
+        for (int i=0; i< uploadFiles.length; i++) {
+
+
+            MultipartFile file = uploadFiles[i];
+
+
+            UUID uuid = UUID.randomUUID();
+            String[] uuids = uuid.toString().split("-");
+
+            int fileSize = (int)file.getSize();
+            String fileName = uuids[0];
+            String fileOriginName = file.getOriginalFilename();
+            String extension = file.getOriginalFilename().substring(file.getName().lastIndexOf("."), file.getName().length());
+            String filePath = folderPath + File.separator + fileName + extension;
+
+            File newFile = new File(filePath);
+
+            file.transferTo(newFile);
+
+            AttachmentDto attachmentDto = new AttachmentDto();
+            attachmentDto.setPno(pno);
+            attachmentDto.setFileName(fileName);
+            attachmentDto.setStorageName(storageName);
+            attachmentDto.setFileSize(fileSize);
+            attachmentDto.setFileOriginName(fileOriginName);
+
+            attachmentDtoList.add(attachmentDto);
+
+        }
+
+
+
+        return 0;
     }
 
     @Override
@@ -73,5 +126,22 @@ public class PostServiceImpl implements PostService {
     public int selectCount(int bno) {
         return postMapper.selectCount(bno);
     }
+
+    /** 코멘트 관련 함수 **/
+    @Override
+    public int deleteComment(int cno) {
+        return erpCommentMapper.delete(cno);
+    }
+
+    @Override
+    public int insertComment(CommentDto commentDto) {
+        return erpCommentMapper.insert(commentDto);
+    }
+
+    @Override
+    public List<CommentDto> selectCommentListByPost(int pno) {
+        return erpCommentMapper.selectListByPost(pno);
+    }
+    /** 코멘트 관련 함수 **/
 
 }

@@ -52,7 +52,6 @@
             COUNT (*) AS COUNT
         FROM SPRING_POST
         WHERE BNO = #{bno}
-        GROUP BY BNO
     </select>
 
     <insert id="insert" parameterType="com.example.spring.Dto.PostDto">
