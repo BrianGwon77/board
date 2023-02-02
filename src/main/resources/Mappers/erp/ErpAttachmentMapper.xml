@@ -43,7 +43,7 @@
         </foreach>
     </insert>
 
-    <delete id="deleteListByPost">
+    <delete id="deleteList">
         UPDATE SPRING_ATTACHMENT
         SET DELETE_FLAG = 'Y'
         , UPDT_DATE = GETDATE()

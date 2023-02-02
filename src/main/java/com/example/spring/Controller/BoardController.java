@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -65,14 +66,14 @@ public class BoardController {
     }
 
     @PostMapping("/write.do")
-    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, FileDto fileDto, int mode, Model model) {
+    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, FileDto fileDto, int mode, Model model) throws IOException {
 
         if (!bindingResult.hasErrors()) {
 
             if (mode == CREATE) {
-                postService.register(postDto);
+                postService.register(postDto, fileDto);
             } else {
-                postService.update(postDto);
+                postService.update(postDto, fileDto);
             }
 
             return "redirect:/board/list?bno=1";

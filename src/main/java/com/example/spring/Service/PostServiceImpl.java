@@ -3,6 +3,7 @@ package com.example.spring.Service;
 import com.example.spring.Dto.*;
 import com.example.spring.Exception.BadRequestException;
 import com.example.spring.Exception.PasswordNotMatchedException;
+import com.example.spring.Mapper.erp.ErpAttachmentMapper;
 import com.example.spring.Mapper.erp.ErpCommentMapper;
 import com.example.spring.Mapper.erp.ErpPostMapper;
 import com.example.spring.Service.PostService;
@@ -22,6 +23,7 @@ public class PostServiceImpl implements PostService {
 
     private final ErpPostMapper postMapper;
     private final ErpCommentMapper erpCommentMapper;
+    private final ErpAttachmentMapper attachmentMapper;
 
     @Value("${spring.board.folder-path}")
     String folderPath;
@@ -36,50 +38,34 @@ public class PostServiceImpl implements PostService {
         // 1. 게시글 정보등록
         postMapper.insert(postDto);
 
-        MultipartFile[] uploadFiles = fileDto.getUploadfiles();
+        // 2. 파일 서버 업로드
+        List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadfiles());
 
-        List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
-
-        int pno = postDto.getPno();
-
-        for (int i=0; i< uploadFiles.length; i++) {
-
-
-            MultipartFile file = uploadFiles[i];
-
-
-            UUID uuid = UUID.randomUUID();
-            String[] uuids = uuid.toString().split("-");
-
-            int fileSize = (int)file.getSize();
-            String fileName = uuids[0];
-            String fileOriginName = file.getOriginalFilename();
-            String extension = file.getOriginalFilename().substring(file.getName().lastIndexOf("."), file.getName().length());
-            String filePath = folderPath + File.separator + fileName + extension;
-
-            File newFile = new File(filePath);
-
-            file.transferTo(newFile);
-
-            AttachmentDto attachmentDto = new AttachmentDto();
-            attachmentDto.setPno(pno);
-            attachmentDto.setFileName(fileName);
-            attachmentDto.setStorageName(storageName);
-            attachmentDto.setFileSize(fileSize);
-            attachmentDto.setFileOriginName(fileOriginName);
-
-            attachmentDtoList.add(attachmentDto);
-
-        }
-
-
+        // 3. AttachmentDto DB 등록
+        attachmentMapper.insertList(attachmentDtoList);
 
         return 0;
+
     }
 
     @Override
-    public int update(PostDto postDto) {
-        return postMapper.update(postDto);
+    @Transactional(rollbackFor = Exception.class)
+    public int update(PostDto postDto, FileDto fileDto) throws IOException {
+
+        // 1. 게시글 정보등록
+        postMapper.update(postDto);
+
+        // 2. 파일 서버 업로드
+        List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadfiles());
+
+        // 3. AttachmentDto DB 등록
+        attachmentMapper.insertList(attachmentDtoList);
+
+        // 4. 삭제대상 파일 제거
+        attachmentMapper.deleteList(fileDto.getDeleteFiles());
+
+        return 0;
+
     }
 
     @Override
@@ -144,4 +130,38 @@ public class PostServiceImpl implements PostService {
     }
     /** 코멘트 관련 함수 **/
 
+    private List<AttachmentDto> uploadFiles(int pno, MultipartFile[] uploadFiles) throws IOException {
+
+        List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
+
+        for (int i = 0; i < uploadFiles.length; i++) {
+
+            MultipartFile file = uploadFiles[i];
+
+            UUID uuid = UUID.randomUUID();
+            String[] uuids = uuid.toString().split("-");
+
+            int fileSize = (int) file.getSize();
+            String fileName = uuids[0];
+            String fileOriginName = file.getOriginalFilename();
+            String extension = file.getOriginalFilename().substring(file.getName().lastIndexOf("."), file.getName().length());
+            String filePath = folderPath + File.separator + fileName + extension;
+
+            File newFile = new File(filePath);
+
+            file.transferTo(newFile);
+
+            AttachmentDto attachmentDto = new AttachmentDto();
+            attachmentDto.setPno(pno);
+            attachmentDto.setFileName(fileName);
+            attachmentDto.setStorageName(storageName);
+            attachmentDto.setFileSize(fileSize);
+            attachmentDto.setFileOriginName(fileOriginName);
+
+            attachmentDtoList.add(attachmentDto);
+
+        }
+
+        return attachmentDtoList;
+    }
 }
