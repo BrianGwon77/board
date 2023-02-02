@@ -5,25 +5,62 @@ import com.example.spring.Dto.PageDto;
 import com.example.spring.Dto.PostDto;
 import com.example.spring.Exception.BadRequestException;
 import com.example.spring.Exception.PasswordNotMatchedException;
+import com.example.spring.Mapper.erp.ErpAttachmentMapper;
 import com.example.spring.Mapper.erp.ErpPostMapper;
 import com.example.spring.Service.PostService;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final ErpPostMapper postMapper;
+    private final ErpAttachmentMapper attachmentMapper;
 
+    @Value("${spring.file-upload-path}")
+    private final String folderPath;
+
+    /** 게시글 등록 **/
     @Override
-    public int register(PostDto postDto, FileDto fileDto) {
-        return postMapper.insert(postDto);
+    @Transactional(rollbackFor=Exception.class)
+    public int register(PostDto postDto, FileDto fileDto) throws IOException {
+
+        // 1. 게시글 정보 등록
+        postMapper.insert(postDto);
+        // 2. 파일을 서버 내 업로드
+        MultipartFile[] uploadFileList = fileDto.getUploadFiles();
+
+        for (int i = 0; i < uploadFileList.length; i++) {
+
+            MultipartFile file = uploadFileList[i];
+
+            UUID randomUUID = UUID.randomUUID();
+            String[] uuids = randomUUID.toString().split("-");
+
+            String fileName = uuids[0];
+            String fileOriginName = file.getOriginalFilename();
+            String extension = fileOriginName.substring(fileOriginName.lastIndexOf('.'), fileOriginName.length());
+            String filePath = folderPath + File.separator + fileName + extension;
+
+            File newFile = new File(filePath);
+
+            file.transferTo(newFile);
+
+        }
+        // 3. 파일 AttachmentDto 정보 DB 저장
+        return 0;
     }
+
 
     @Override
     public int update(PostDto postDto, FileDto fileDto) {

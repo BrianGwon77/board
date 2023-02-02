@@ -26,6 +26,9 @@ public class BoardController {
 
     private final PostService postService;
 
+    private final int CREATE = 0;
+    private final int MODIFY = 1;
+
     @GetMapping("/list")
     public String list( @RequestParam(required=true) int bno,
                         @RequestParam(required=false, defaultValue = "1") int page,
@@ -57,23 +60,33 @@ public class BoardController {
     @GetMapping("/write")
     public String write(Model model){
         PostDto postDto = new PostDto();
-        postDto.setMode("CREATE");
         model.addAttribute("postDto", postDto);
         return "/board/post-write";
     }
 
     @PostMapping("/write.do")
-    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, FileDto fileDto, Model model) {
+    public String write_do(@Validated PostDto postDto,
+                           BindingResult bindingResult,
+                           FileDto fileDto,
+                           int mode,
+                           Model model) {
 
+        /** 
+         * 사용자 입력에 오류가 존재하지 않을 경우 수행
+         * **/
         if (!bindingResult.hasErrors()) {
 
-            if (postDto.getMode().equals("CREATE"))
-                postService.register(postDto, null);
-            else
-                postService.update(postDto , null);
+            /** 작성 모드일 경우 register 호출 **/
+            if (mode == CREATE) {
+                postService.register(postDto, fileDto);
+            }
 
-            return "redirect:/board/list?bno=1";
+            /** 수정 모드일 경우 modify 호출 **/
+            else {
+                postService.update(postDto, fileDto);
+            }
 
+            return "redirect:/board/list?bno=" + postDto.getBno();
         }
 
         return "/board/post-write";
@@ -99,6 +112,7 @@ public class BoardController {
 
         if (selectedPostDto.getWriter().equals(postDto.getWriter()) && selectedPostDto.getPassword().equals(postDto.getPassword())) {
             model.addAttribute("postDto", selectedPostDto);
+            model.addAttribute("mode", MODIFY);
             return "/board/post-write";
         }
 
