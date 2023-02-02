@@ -1,5 +1,6 @@
 package com.example.spring.Service;
 
+import com.example.spring.Dto.FileDto;
 import com.example.spring.Dto.PageDto;
 import com.example.spring.Dto.PostDto;
 import com.example.spring.Exception.BadRequestException;
@@ -20,12 +21,12 @@ public class PostServiceImpl implements PostService {
     private final ErpPostMapper postMapper;
 
     @Override
-    public int register(PostDto postDto) {
+    public int register(PostDto postDto, FileDto fileDto) {
         return postMapper.insert(postDto);
     }
 
     @Override
-    public int update(PostDto postDto) {
+    public int update(PostDto postDto, FileDto fileDto) {
         return postMapper.update(postDto);
     }
 

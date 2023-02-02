@@ -1,5 +1,6 @@
 package com.example.spring.Controller;
 
+import com.example.spring.Dto.FileDto;
 import com.example.spring.Dto.PageDto;
 import com.example.spring.Dto.PostDto;
 import com.example.spring.Exception.BadRequestException;
@@ -62,14 +63,14 @@ public class BoardController {
     }
 
     @PostMapping("/write.do")
-    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, MultipartFile[] files, Model model) {
+    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, FileDto fileDto, Model model) {
 
         if (!bindingResult.hasErrors()) {
 
             if (postDto.getMode().equals("CREATE"))
-                postService.register(postDto);
+                postService.register(postDto, null);
             else
-                postService.update(postDto);
+                postService.update(postDto , null);
 
             return "redirect:/board/list?bno=1";
 
