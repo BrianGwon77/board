@@ -2,6 +2,8 @@ package com.example.spring.Dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -9,11 +11,12 @@ import java.util.List;
 public class CommentDto {
     private int cno;
     private int pno;
-    private String writer;
-    private String password;
     private int parent_cno;
     private String receiver;
+    private String content;
+    private String writer;
+    private String password;
     private Date reg_date;
     private Date updt_date;
-    private List<CommentDto> commentDtoList;
+    private List<CommentDto> replyCommentList;
 }

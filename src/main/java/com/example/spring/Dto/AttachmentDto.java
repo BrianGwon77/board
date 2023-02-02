@@ -6,8 +6,8 @@ import lombok.Data;
 public class AttachmentDto {
     private int ano;
     private int pno;
-    private String fileName;
-    private String originFileName;
-    private String filePath;
     private int fileSize;
+    private String fileName;
+    private String fileOriginName;
+    private String storageName;
 }

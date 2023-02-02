@@ -23,6 +23,7 @@
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
         <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="mode" th:value="${mode}">
             <article class="content-field">
                 <input type="text" placeholder="제목" th:field="*{title}">
                 <div class="field-error" th:if="${#fields.hasErrors('title')}">
@@ -36,9 +37,8 @@
             <div class="file-list-div">
                 <input type="file" id="file-input" multiple="multiple" name="uploadFiles">
                 <label for="file-input" class="file-label"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</label>
-                <div class="file-sub-list-div" id="file-list-div">
-                    <ul class="file-list" id="file-list">
-
+                <div class="file-sub-list-div">
+                    <ul class="file-ul" id="file-ul">
                     </ul>
                 </div>
             </div>
@@ -83,28 +83,30 @@
 
 <script>
 
-    CKEDITOR.editorConfig = function (config) {
+    let existingFiles = new DataTransfer();
+
+    CKEDITOR.editorConfig = function( config ) {
         config.toolbarGroups = [
-            {name: 'document', groups: ['mode', 'document', 'doctools']},
-            {name: 'clipboard', groups: ['clipboard', 'undo']},
-            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
-            {name: 'forms', groups: ['forms']},
+            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+            { name: 'forms', groups: [ 'forms' ] },
             '/',
-            {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
-            {name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph']},
-            {name: 'links', groups: ['links']},
-            {name: 'insert', groups: ['insert']},
+            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+            { name: 'links', groups: [ 'links' ] },
+            { name: 'insert', groups: [ 'insert' ] },
             '/',
-            {name: 'styles', groups: ['styles']},
-            {name: 'colors', groups: ['colors']},
-            {name: 'tools', groups: ['tools']},
-            {name: 'others', groups: ['others']},
-            {name: 'about', groups: ['about']}
+            { name: 'styles', groups: [ 'styles' ] },
+            { name: 'colors', groups: [ 'colors' ] },
+            { name: 'tools', groups: [ 'tools' ] },
+            { name: 'others', groups: [ 'others' ] },
+            { name: 'about', groups: [ 'about' ] }
         ];
 
     };
 
-    CKEDITOR.replace('content', {
+    CKEDITOR.replace( 'content' , {
         height: '500px',
     });
 
@@ -112,110 +114,53 @@
         $('#form').submit();
     }
 
-    let storedFileList = [];
+    document.getElementById('file-input').addEventListener('change', function(event) {
 
-    document.getElementById('file-input').addEventListener('click', function (event) {
-        storedFileList = [];
-        let fileInput = document.getElementById('file-input');
-        storedFileList = [...fileInput.files];
-    })
+        let target = event.target;
 
-    document.getElementById('file-input').addEventListener('change', function (event) {
-
-        let dt = new DataTransfer();
-        let fileList = [...storedFileList, ...event.target.files];
-
-        fileList.forEach(file => {
-            dt.items.add(file);
-        })
-
-        reloadFileList(fileList);
-
-        event.target.files = dt.files;
-
-    })
-
-    function reloadFileList(fileList) {
-
-        let ul = document.getElementById('file-list');
-        let fileInput = document.getElementById('file-input');
-
+        let ul = document.getElementById('file-ul');
         ul.innerHTML = '';
 
+        Array.from(target.files).forEach(file => {
+            existingFiles.items.add(file);
+        });
 
-        fileList.map((file, index) => {
+        target.files = existingFiles.files;
+
+        Array.from(target.files).forEach(file => {
 
             let li = document.createElement('li');
-
-            li.innerHTML = file.name + `&nbsp;&nbsp;`;
-            li.setAttribute('index', index);
-
             let icon = document.createElement('i');
-            icon.className = 'fa-solid fa-xmark';
+            icon.className = 'fa-solid fa-x';
 
-            icon.addEventListener('click', function (event) {
-
+            icon.addEventListener('click', function(event) {
                 let target = event.target;
-
+                removeFiles(target.parentNode.getAttribute('file-name'));
                 target.parentNode.remove();
-
-                fileRemove(target.parentNode.getAttribute('index'));
-
             })
 
+            li.innerHTML = file.name + `&nbsp;&nbsp;`;
+            li.setAttribute('file-name', file.name);
             li.appendChild(icon);
-
             ul.appendChild(li);
-
         })
 
-    }
-
-    function fileRemove(targetIndex) {
-
-        let fileList = document.getElementById('file-input').files;
+    });
+        // 테스트 커밋 ditto
+    function removeFiles(name) {
 
         let dt = new DataTransfer();
-
-        Array.from(fileList)
-            .filter((file, index) => index != targetIndex)
-            .forEach(file => dt.items.add(file));
-
-
-        document.getElementById('file-input').files = dt.files;
-
-    }
-
-    /** drag and drop implement **/
-
-    $('#file-list-div').on('dragenter', function (event) {
-        event.preventDefault();
-    })
-
-    $('#file-list-div').on('dragover', function (event) {
-        event.preventDefault();
-    })
-
-    document.getElementById('file-list-div').addEventListener('drop', function (event) {
-
-        // block default event.
-        event.preventDefault();
-
-        let dt = new DataTransfer();
-
         let fileInput = document.getElementById('file-input');
 
-        let fileList = [...fileInput.files, ...event.dataTransfer.files];
-
-        fileList.map(file => {
-            dt.items.add(file);
-        })
+        Array.from(fileInput.files)
+            .filter(file => file.name != name)
+            .forEach(file => {
+                dt.items.add(file);
+            })
 
         fileInput.files = dt.files;
+        existingFiles.files = dt.files;
 
-        reloadFileList([...dt.files]);
-    })
-
-    /** drag and drop implement **/
+    }
 
 </script>

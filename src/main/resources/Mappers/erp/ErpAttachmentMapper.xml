@@ -5,25 +5,52 @@
 
 <mapper namespace="com.example.spring.Mapper.erp.ErpAttachmentMapper">
 
-    <insert id="insert" parameterType="java.util.List">
-        INSERT INTO SPRING_ATTACHMENT
-        (
-            PNO
-            , FILE_NAME
-            , FILE_ORIGIN_NAME
-            , FILE_SIZE
-            , FILE_PATH
+    <sql id="select">
+        SELECT ANO
+             , PNO
+             , FILE_NAME
+             , FILE_ORIGIN_NAME
+             , STORAGE_NAME
+             , FILE_SIZE
+             , REG_DATE
+             , UPDT_DATE
+        FROM SPRING_ATTACHMENT
+        WHERE DELETE_FLAG = 'N'
+    </sql>
+
+    <select id="selectListByPost" resultType="com.example.spring.Dto.AttachmentDto" parameterType="int">
+        <include refid="select"/>
+        AND PNO = #{pno}
+    </select>
+
+    <insert id="insertList" parameterType="java.util.List">
+        INSERT INTO SPRING_ATTACHMENT (
+        PNO
+        , FILE_NAME
+        , FILE_ORIGIN_NAME
+        , STORAGE_NAME
+        , FILE_SIZE
         )
         VALUES
-        <foreach item="item" index="index" collection="attachmentDtoList" separator=",">
+        <foreach collection="attachmentDtoList" item="item" separator=",">
             (
-                ${item.pno}
-                , #{item.fileName}
-                , #{item.originFileName}
-                , ${item.fileSize}
-                , #{item.filePath}
+            #{item.pno}
+            , #{item.fileName}
+            , #{item.fileOriginName}
+            , #{item.storageName}
+            , #{item.fileSize}
             )
         </foreach>
     </insert>
+
+    <delete id="deleteList">
+        UPDATE SPRING_ATTACHMENT
+        SET DELETE_FLAG = 'Y'
+        , UPDT_DATE = GETDATE()
+        WHERE FILE_NAME IN
+        <foreach collection="deleteFileList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
 
 </mapper>

@@ -14,7 +14,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -28,16 +27,16 @@ public class BoardController {
     private final PostService postService;
 
     private final int CREATE = 0;
-    private final int MODIFY = 1;
+    private final int UPDATE = 1;
 
     @GetMapping("/list")
-    public String list( @RequestParam(required=true) int bno,
-                        @RequestParam(required=false, defaultValue = "1") int page,
-                        @RequestParam(required=false, defaultValue = "10") int pageSize,
-                       Model model){
+    public String list(@RequestParam(required = true) int bno,
+                       @RequestParam(required = false, defaultValue = "1") int page,
+                       @RequestParam(required = false, defaultValue = "10") int pageSize,
+                       Model model) {
 
         // 시작 글 번호
-        int offset = (page-1)*pageSize + 1;
+        int offset = (page - 1) * pageSize + 1;
 
         // 마지막 글 번호
         int limit = page * pageSize;
@@ -59,7 +58,7 @@ public class BoardController {
     }
 
     @GetMapping("/write")
-    public String write(Model model){
+    public String write(Model model) {
         PostDto postDto = new PostDto();
         model.addAttribute("postDto", postDto);
         model.addAttribute("mode", CREATE);
@@ -67,44 +66,29 @@ public class BoardController {
     }
 
     @PostMapping("/write.do")
-    public String write_do(@Validated PostDto postDto,
-                           BindingResult bindingResult,
-                           FileDto fileDto,
-                           @RequestParam(name="mode", defaultValue = "0") String modeString,
-                           Model model) throws IOException {
-
-        /** 
-         * 사용자 입력에 오류가 존재하지 않을 경우 수행
-         * **/
-
-        int mode = Integer.parseInt(modeString);
+    public String write_do(@Validated PostDto postDto, BindingResult bindingResult, FileDto fileDto, int mode, Model model) throws IOException {
 
         if (!bindingResult.hasErrors()) {
 
-            /** 작성 모드일 경우 register 호출 **/
-            if (mode == CREATE) {
+            if (mode == 0) {
                 postService.register(postDto, fileDto);
-            }
-
-            /** 수정 모드일 경우 modify 호출 **/
-            else {
+            } else {
                 postService.update(postDto, fileDto);
             }
 
             return "redirect:/board/list?bno=" + postDto.getBno();
         }
-
         return "/board/post-write";
     }
 
     @GetMapping("/certificate")
-    public String certificate(PostDto postDto, Model model){
+    public String certificate(PostDto postDto, Model model) {
         model.addAttribute("postDto", postDto);
         return "/board/certificate";
     }
 
     @GetMapping("/read")
-    public String read(int bno, int pno, Model model){
+    public String read(int bno, int pno, Model model) {
         PostDto postDto = postService.selectOne(bno, pno);
         model.addAttribute("postDto", postDto);
         return "/board/post-read";
@@ -117,7 +101,7 @@ public class BoardController {
 
         if (selectedPostDto.getWriter().equals(postDto.getWriter()) && selectedPostDto.getPassword().equals(postDto.getPassword())) {
             model.addAttribute("postDto", selectedPostDto);
-            model.addAttribute("mode", MODIFY);
+            model.addAttribute("mode", UPDATE);
             return "/board/post-write";
         }
 

@@ -1,18 +1,14 @@
 package com.example.spring.Service;
 
-import com.example.spring.Dto.AttachmentDto;
-import com.example.spring.Dto.FileDto;
-import com.example.spring.Dto.PageDto;
-import com.example.spring.Dto.PostDto;
+import com.example.spring.Dto.*;
 import com.example.spring.Exception.BadRequestException;
 import com.example.spring.Exception.PasswordNotMatchedException;
 import com.example.spring.Mapper.erp.ErpAttachmentMapper;
+import com.example.spring.Mapper.erp.ErpCommentMapper;
 import com.example.spring.Mapper.erp.ErpPostMapper;
 import com.example.spring.Service.PostService;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,67 +22,55 @@ import java.util.*;
 public class PostServiceImpl implements PostService {
 
     private final ErpPostMapper postMapper;
+    private final ErpCommentMapper erpCommentMapper;
     private final ErpAttachmentMapper attachmentMapper;
 
-    @Value("${spring.board.upload-path}")
+    @Value("${spring.board.folder-path}")
     String folderPath;
 
     @Value("${spring.board.storage-name}")
     String storageName;
 
-    /** 게시글 등록 **/
     @Override
-    @Transactional(rollbackFor=Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public int register(PostDto postDto, FileDto fileDto) throws IOException {
 
-        // 1. 게시글 정보 등록
+        // 1. 게시글 정보등록
         postMapper.insert(postDto);
 
-        int pno = postDto.getPno();
-
-        // 2. 파일을 서버 내 업로드
-        MultipartFile[] uploadFileList = fileDto.getUploadFiles();
-
-        List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
-
-        for (int i = 0; i < uploadFileList.length; i++) {
-
-            MultipartFile file = uploadFileList[i];
-
-            UUID randomUUID = UUID.randomUUID();
-            String[] uuids = randomUUID.toString().split("-");
-
-            int fileSize = (int)file.getSize();
-            String fileName = uuids[0];
-            String fileOriginName = file.getOriginalFilename();
-            String extension = fileOriginName.substring(fileOriginName.lastIndexOf('.'), fileOriginName.length());
-            String filePath = folderPath + File.separator + fileName + extension;
-
-            File newFile = new File(filePath);
-
-            file.transferTo(newFile);
-
-            AttachmentDto attachmentDto = new AttachmentDto();
-            attachmentDto.setFileName(fileName);
-            attachmentDto.setOriginFileName(fileOriginName);
-            attachmentDto.setFilePath(storageName);
-            attachmentDto.setFileSize(fileSize);
-            attachmentDto.setPno(pno);
-
-            attachmentDtoList.add(attachmentDto);
-
+        if (fileDto.getUploadFiles() != null) {
+            // 2. 파일 서버 업로드
+            List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
+            // 3. AttachmentDto DB 등록
+            attachmentMapper.insertList(attachmentDtoList);
         }
 
-        // 3. 파일 AttachmentDto 정보 DB 저장
-        attachmentMapper.insert(attachmentDtoList);
-
         return 0;
+
     }
 
-
     @Override
-    public int update(PostDto postDto, FileDto fileDto) {
-        return postMapper.update(postDto);
+    @Transactional(rollbackFor = Exception.class)
+    public int update(PostDto postDto, FileDto fileDto) throws IOException {
+
+        // 1. 게시글 정보등록
+        postMapper.update(postDto);
+
+
+        if (fileDto.getDeleteFiles() != null) {
+            // 2. 파일 서버 업로드
+            List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
+            // 3. AttachmentDto DB 등록
+            attachmentMapper.insertList(attachmentDtoList);
+        }
+
+        if (fileDto.getDeleteFiles() != null) {
+            // 4. 삭제대상 파일 제거
+            attachmentMapper.deleteList(fileDto.getDeleteFiles());
+        }
+
+        return 0;
+
     }
 
     @Override
@@ -134,4 +118,55 @@ public class PostServiceImpl implements PostService {
         return postMapper.selectCount(bno);
     }
 
+    /** 코멘트 관련 함수 **/
+    @Override
+    public int deleteComment(int cno) {
+        return erpCommentMapper.delete(cno);
+    }
+
+    @Override
+    public int insertComment(CommentDto commentDto) {
+        return erpCommentMapper.insert(commentDto);
+    }
+
+    @Override
+    public List<CommentDto> selectCommentListByPost(int pno) {
+        return erpCommentMapper.selectListByPost(pno);
+    }
+    /** 코멘트 관련 함수 **/
+
+    private List<AttachmentDto> uploadFiles(int pno, MultipartFile[] uploadFiles) throws IOException {
+
+        List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
+
+        for (int i = 0; i < uploadFiles.length; i++) {
+
+            MultipartFile file = uploadFiles[i];
+
+            UUID uuid = UUID.randomUUID();
+            String[] uuids = uuid.toString().split("-");
+
+            int fileSize = (int) file.getSize();
+            String fileName = uuids[0];
+            String fileOriginName = file.getOriginalFilename();
+            String extension = fileOriginName.substring(fileOriginName.lastIndexOf("."), fileOriginName.length());
+            String filePath = folderPath + File.separator + fileName + extension;
+
+            File newFile = new File(filePath);
+
+            file.transferTo(newFile);
+
+            AttachmentDto attachmentDto = new AttachmentDto();
+            attachmentDto.setPno(pno);
+            attachmentDto.setFileName(fileName);
+            attachmentDto.setStorageName(storageName);
+            attachmentDto.setFileSize(fileSize);
+            attachmentDto.setFileOriginName(fileOriginName);
+
+            attachmentDtoList.add(attachmentDto);
+
+        }
+
+        return attachmentDtoList;
+    }
 }
