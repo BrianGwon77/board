@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -61,6 +62,7 @@ public class BoardController {
     public String write(Model model){
         PostDto postDto = new PostDto();
         model.addAttribute("postDto", postDto);
+        model.addAttribute("mode", CREATE);
         return "/board/post-write";
     }
 
@@ -68,12 +70,15 @@ public class BoardController {
     public String write_do(@Validated PostDto postDto,
                            BindingResult bindingResult,
                            FileDto fileDto,
-                           int mode,
-                           Model model) {
+                           @RequestParam(name="mode", defaultValue = "0") String modeString,
+                           Model model) throws IOException {
 
         /** 
          * 사용자 입력에 오류가 존재하지 않을 경우 수행
          * **/
+
+        int mode = Integer.parseInt(modeString);
+
         if (!bindingResult.hasErrors()) {
 
             /** 작성 모드일 경우 register 호출 **/

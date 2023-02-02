@@ -21,7 +21,7 @@
         WHERE DELETE_FLAG = 'N'
     </sql>
 
-    <select id="selectOne" resultMap="com.example.spring.Dto.PostDto" parameterType="Map">
+    <select id="selectOne" resultType="com.example.spring.Dto.PostDto" parameterType="Map">
         <include refid="select"/>
         AND BNO = #{bno} AND PNO = #{pno}
     </select>
@@ -50,7 +50,7 @@
 
     <select id="selectCount" parameterType="int" resultType="int">
         SELECT
-            COUNT (*) AS COUNT
+            ISNULL(COUNT (*), 0) AS COUNT
         FROM SPRING_POST
         WHERE BNO = #{bno}
         GROUP BY BNO

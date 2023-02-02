@@ -4,78 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.spring.Mapper.erp.ErpAttachmentMapper">
-    <sql id="select">
-        SELECT
-            BNO
-            ,PNO
-            ,TITLE
-            ,CONTENT
-            ,WRITER
-            ,PASSWORD
-            ,VIEW_CNT
-            ,COMMENT_CNT
-            , REG_DATE
-            , UPDT_DATE
-        FROM SPRING_POST
-        WHERE DELETE_FLAG = 'N'
-    </sql>
 
-    <select id="selectOne" resultType="com.example.spring.Dto.PostDto" parameterType="Map">
-        <include refid="select"/>
-        AND BNO = #{bno} AND PNO = #{pno}
-    </select>
-
-    <select id="selectPage" resultType="com.example.spring.Dto.PostDto" parameterType="Map">
-        SELECT
-            BNO
-             , PNO
-             , TITLE
-             , CONTENT
-             , WRITER
-             , PASSWORD
-             , VIEW_CNT
-             , COMMENT_CNT
-             , REG_DATE
-             , UPDT_DATE
-        FROM
+    <insert id="insert" parameterType="java.util.List">
+        INSERT INTO SPRING_ATTACHMENT
+        (
+            PNO
+            , FILE_NAME
+            , FILE_ORIGIN_NAME
+            , FILE_SIZE
+            , FILE_PATH
+        )
+        VALUES
+        <foreach item="item" index="index" collection="attachmentDtoList" separator=",">
             (
-                SELECT
-                    ROW_NUMBER() OVER(ORDER BY PNO) AS ROW_NUMBER
-                    , *
-                FROM SPRING_POST
-            ) A
-        WHERE ROW_NUMBER BETWEEN #{offset} AND #{limit}
-    </select>
-
-    <select id="selectCount" parameterType="int" resultType="int">
-        SELECT
-            COUNT (*) AS COUNT
-        FROM SPRING_POST
-        WHERE BNO = #{bno}
-        GROUP BY BNO
-    </select>
-
-    <insert id="insert" parameterType="com.example.spring.Dto.PostDto">
-        INSERT INTO SPRING_POST ( BNO
-                                 , TITLE
-                                 , CONTENT
-                                 , WRITER
-                                 , PASSWORD )
-        VALUES ( #{bno}, #{title}, #{content}, #{writer}, #{password})
+                ${item.pno}
+                , #{item.fileName}
+                , #{item.originFileName}
+                , ${item.fileSize}
+                , #{item.filePath}
+            )
+        </foreach>
     </insert>
-
-    <update id="update">
-        UPDATE SPRING_POST
-        SET
-            TITLE = #{title},
-            CONTENT = #{content},
-            UPDT_DATE = GETDATE()
-        WHERE PNO = #{pno} AND BNO = #{bno}
-    </update>
-
-    <delete id="delete">
-        DELETE FROM SPRING_POST
-        WHERE PNO = #{PNO} AND BNO = #{BNO}
-    </delete>
 
 </mapper>

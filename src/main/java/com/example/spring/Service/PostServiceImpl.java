@@ -1,5 +1,6 @@
 package com.example.spring.Service;
 
+import com.example.spring.Dto.AttachmentDto;
 import com.example.spring.Dto.FileDto;
 import com.example.spring.Dto.PageDto;
 import com.example.spring.Dto.PostDto;
@@ -27,8 +28,11 @@ public class PostServiceImpl implements PostService {
     private final ErpPostMapper postMapper;
     private final ErpAttachmentMapper attachmentMapper;
 
-    @Value("${spring.file-upload-path}")
-    private final String folderPath;
+    @Value("${spring.board.upload-path}")
+    String folderPath;
+
+    @Value("${spring.board.storage-name}")
+    String storageName;
 
     /** 게시글 등록 **/
     @Override
@@ -37,8 +41,13 @@ public class PostServiceImpl implements PostService {
 
         // 1. 게시글 정보 등록
         postMapper.insert(postDto);
+
+        int pno = postDto.getPno();
+
         // 2. 파일을 서버 내 업로드
         MultipartFile[] uploadFileList = fileDto.getUploadFiles();
+
+        List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
 
         for (int i = 0; i < uploadFileList.length; i++) {
 
@@ -47,6 +56,7 @@ public class PostServiceImpl implements PostService {
             UUID randomUUID = UUID.randomUUID();
             String[] uuids = randomUUID.toString().split("-");
 
+            int fileSize = (int)file.getSize();
             String fileName = uuids[0];
             String fileOriginName = file.getOriginalFilename();
             String extension = fileOriginName.substring(fileOriginName.lastIndexOf('.'), fileOriginName.length());
@@ -56,8 +66,20 @@ public class PostServiceImpl implements PostService {
 
             file.transferTo(newFile);
 
+            AttachmentDto attachmentDto = new AttachmentDto();
+            attachmentDto.setFileName(fileName);
+            attachmentDto.setOriginFileName(fileOriginName);
+            attachmentDto.setFilePath(storageName);
+            attachmentDto.setFileSize(fileSize);
+            attachmentDto.setPno(pno);
+
+            attachmentDtoList.add(attachmentDto);
+
         }
+
         // 3. 파일 AttachmentDto 정보 DB 저장
+        attachmentMapper.insert(attachmentDtoList);
+
         return 0;
     }
 
