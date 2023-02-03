@@ -24,7 +24,13 @@
             <textarea rows=5 cols="50" class="content" id="content" th:utext="${postDto.content}"></textarea>
         </article>
         <article class="file-list">
-            <button class="file-add-btn"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</button>
+            <div class="file-list-div" id="file-list-div">
+                <div class="file-sub-list-div">
+                    <ul class="file-list" id="file-list">
+                        <li th:each="attachmentDto :  ${attachmentDtoList}" th:text="${attachmentDto.fileOriginName}"></li>
+                    </ul>
+                </div>
+            </div>
         </article>
         <article class="btn-list">
             <button class="confirm-btn" th:onclick="|location.href='@{/board/list(bno=${postDto.bno})}'|">목록</button>
@@ -41,36 +47,28 @@
     </section>
     <section class="comment-list-section">
         <div class="comment-unit" th:each="commentDto : ${commentDtoList}">
-            <p class="comment-list-writer">관리자</p>
-            <p class="comment-list-content" th:onclick="add_reply_form(this)">답글입니다.</p>
-            <p class="remove-btn"><i class="fa-solid fa-xmark"></i></p>
+            <p class="comment-list-writer" th:text="${commentDto.writer}">관리자</p>
+            <p class="comment-list-content" th:cno="${commentDto.cno}"
+               th:style="${commentDto.delete_flag} == 'Y' ? 'color: gray; font-weight: 500;' : ''"th:receiver="${commentDto.writer}" th:text="${commentDto.delete_flag == 'N'} ? ${commentDto.content} : '작성자가 삭제한 댓글입니다.'" th:onclick="${commentDto.delete_flag == 'N'} ? 'add_reply_form(this)' : ''"></p>
+            <p th:if="${commentDto.delete_flag == 'N'}" class="remove-btn" th:pno="${commentDto.pno}"><i class="fa-solid fa-xmark" th:onclick="addCommentRemoveForm(this)" th:cno="${commentDto.cno}" ></i></p>
             <div class="reply-comment-unit" th:each="replyCommentDto : ${commentDto.replyCommentList}">
-                <p class="comment-list-writer"><i class="fa-brands fa-replyd"></i>&nbsp;권도영</p>
-                <p class="comment-list-content"><span class="to_user">(관리자)</span>답글입니다.</p>
-                <p class="remove-btn" cno="1" onclick="addCommentRemoveForm(this)">
-                    <i class="fa-solid fa-xmark"></i>
+                <p class="comment-list-writer"><i class="fa-brands fa-replyd"></i>&nbsp;[[${replyCommentDto.writer}]]</p>
+                <p class="comment-list-content" th:cno="${replyCommentDto.cno}" th:pno="${replyCommentDto.pno}" th:receiver="${commentDto.writer}" th:onclick="add_reply_form(this)" ><span class="to_user">[[${replyCommentDto.receiver}]]</span>[[${replyCommentDto.content}]]</p>
+                <p class="remove-btn">
+                    <i class="fa-solid fa-xmark" th:cno="${replyCommentDto.cno}" th:onclick="addCommentRemoveForm(this)"></i>
                 </p>
             </div>
         </div>
-        <div class="comment-unit" th:each="commentDto : ${commentDtoList}">
-            <p class="comment-list-writer">관리자</p>
-            <p class="comment-list-content" th:onclick="add_reply_form(this)">답글입니다</p>
-            <div class="reply-comment-unit" th:each="replyCommentDto : ${commentDto.replyCommentList}">
-                <p class="comment-list-writer"><i class="fa-brands fa-replyd"></i>&nbsp;권도영</p>
-                <p class="comment-list-content" th:onclick="add_reply_form(this)">답글입니다.</p>
-            </div>
-            <input type="hidden" name="test" value="hi">
-        </div>
     </section>
     <section class="comment-section">
-        <form th:action="@{/board/write/comment.do}" th:object="${commentDto}" th:method="post" th:id="form">
+        <form th:action="@{/board/write/comment.do}" th:method="post" th:id="form">
             <article class="comment-writer-area">
-                <input type="text" class="comment-writer" placeholder="작성자" th:field="*{writer}">
-                <input type="text" class="comment-password" placeholder="비밀번호" th:field="*{password}">
+                <input type="text" class="comment-writer" placeholder="작성자" name="writer">
+                <input type="text" class="comment-password" placeholder="비밀번호" name="password" >
             </article>
             <article class="comment-editor-area">
-                <textarea class="comment-editor" th:field="*{content}"></textarea>
-                <input type="hidden" th:field="*{pno}">
+                <textarea class="comment-editor" name="content"></textarea>
+                <input type="hidden" th:value="${postDto.pno}" name="pno">
                 <button class="comment-reg-btn"><i class="fa-solid fa-comments" th:onclick="submit()"></i>&nbsp;등록
                 </button>
             </article>
@@ -91,6 +89,7 @@
         height: '500px',
         resize_enabled: false,
         removePlugins: 'elementspath',
+        readOnly: true,
     });
 
     function submit() {
@@ -99,13 +98,15 @@
 
     function add_reply_form(current_element) {
 
-        alert('');
+        let comment_section = document.createElement('section');
+        let pno = current_element.getAttribute("pno");
+        let parent_cno = current_element.getAttribute("cno");
 
-        var comment_section = document.createElement('section');
-        var parent_cno = current_element.getAttribute("id");
+        let receiver = current_element.getAttribute("receiver");
+
         comment_section.setAttribute("class", "comment-section");
 
-        var replyForm = document.createElement('form');
+        let replyForm = document.createElement('form');
 
         // set attribute (form)
         replyForm.id = 'replyForm';
@@ -113,17 +114,17 @@
         replyForm.method = 'post';
         replyForm.action = '/board/write/comment.do';
 
-        var writer_area = document.createElement('article');
+        let writer_area = document.createElement('article');
         writer_area.setAttribute("class", "comment-writer-area");
 
-        var comment_writer = document.createElement('input');
+        let comment_writer = document.createElement('input');
 
         comment_writer.setAttribute("type", "text");
         comment_writer.setAttribute("name", "writer");
         comment_writer.setAttribute("class", "comment-writer");
         comment_writer.setAttribute("placeholder", "작성자");
 
-        var comment_password = document.createElement('input');
+        let comment_password = document.createElement('input');
 
         comment_password.setAttribute("type", "text");
         comment_password.setAttribute("name", "password");
@@ -135,20 +136,30 @@
 
         ///////////////////////////////////////////////////////
 
-        var comment_cno = document.createElement('input');
+        let comment_cno = document.createElement('input');
         comment_cno.setAttribute("type", "hidden");
         comment_cno.setAttribute("name", "parent_cno");
         comment_cno.setAttribute("value", parent_cno);
 
-        var editor_area = document.createElement('article');
+        let comment_receiver = document.createElement('input');
+        comment_receiver.setAttribute("type", "hidden");
+        comment_receiver.setAttribute("name", "receiver");
+        comment_receiver.setAttribute("value", receiver);
+
+        let comment_pno = document.createElement('input');
+        comment_pno.setAttribute("type", "hidden");
+        comment_pno.setAttribute("name", "pno");
+        comment_pno.setAttribute("value", pno);
+
+        let editor_area = document.createElement('article');
         editor_area.setAttribute("class", "comment-editor-area");
 
-        var comment_editor = document.createElement('textarea');
+        let comment_editor = document.createElement('textarea');
         comment_editor.setAttribute("class", "comment-editor");
         comment_editor.setAttribute("name", "content");
 
 
-        var comment_reg_btn = document.createElement('button');
+        let comment_reg_btn = document.createElement('button');
         comment_reg_btn.setAttribute("class", "comment-reg-btn");
         comment_reg_btn.innerHTML = `<i class="fa-solid fa-comments"></i>&nbsp;등록`;
         comment_reg_btn.click = function() {
@@ -158,6 +169,7 @@
         editor_area.appendChild(comment_editor);
         editor_area.appendChild(comment_reg_btn);
         editor_area.appendChild(comment_cno);
+        editor_area.appendChild(comment_receiver);
 
         replyForm.appendChild(writer_area);
         replyForm.appendChild(editor_area);
@@ -165,27 +177,14 @@
         comment_section.setAttribute("name", "reply_comment_section");
         comment_section.appendChild(replyForm);
 
-        var array = document.getElementsByName("reply_comment_section");
+        closeAllModals();
 
-        for (var i = 0; i < array.length; i++)
-            array[i].remove();
-
-        current_element.insertAdjacentElement('afterend', comment_section);
+        current_element.nextElementSibling.insertAdjacentElement('afterend', comment_section);
 
     }
 
     function reload() {
         location.reload();
-    }
-
-    function show_remove_form(current_element) {
-        let remove_form = current_element.nextElementSibling;
-        remove_form.style.display = 'block';
-    }
-
-    function send_remove_form(current_element) {
-        let remove_form = current_element.parentElement;
-        remove_form.submit();
     }
 
     /**
@@ -203,6 +202,7 @@
         commentRemoveForm.method = 'post';
         commentRemoveForm.action = '/board/delete/comment';
         commentRemoveForm.className = 'comment-remove-form';
+        commentRemoveForm.name = 'comment-remove-form';
 
         // input element 생성 및 초기화
         let passwordInput = document.createElement('input');
@@ -256,6 +256,8 @@
             commentRemoveForm.remove();
         })
 
+        closeAllModals();
+
         commentRemoveForm.appendChild(passwordInput);
         commentRemoveForm.appendChild(submitButton);
         commentRemoveForm.appendChild(cancelButton);
@@ -266,6 +268,20 @@
 
     function isEmpty(currentElement) {
         return (currentElement.value == null);
+    }
+
+    function closeAllModals() {
+
+        let array = document.getElementsByName("comment-remove-form");
+
+        for (let i = 0; i < array.length; i++)
+            array[i].remove();
+
+        array = document.getElementsByName("reply_comment_section");
+
+        for (let i = 0; i < array.length; i++)
+            array[i].remove();
+
     }
 
 

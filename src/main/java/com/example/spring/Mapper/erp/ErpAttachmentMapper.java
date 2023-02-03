@@ -11,5 +11,6 @@ public interface ErpAttachmentMapper {
     public int insertList(List<AttachmentDto> attachmentDtoList);
     public int deleteList(String[] deleteFiles);
     public int deleteListByPost(int pno);
+    public AttachmentDto select(int ano);
     public List<AttachmentDto> selectListByPost(int pno);
 }

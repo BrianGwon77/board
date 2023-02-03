@@ -6,7 +6,6 @@ import com.example.spring.Exception.PasswordNotMatchedException;
 import com.example.spring.Mapper.erp.ErpAttachmentMapper;
 import com.example.spring.Mapper.erp.ErpCommentMapper;
 import com.example.spring.Mapper.erp.ErpPostMapper;
-import com.example.spring.Service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,7 +55,6 @@ public class PostServiceImpl implements PostService {
         // 1. 게시글 정보등록
         postMapper.update(postDto);
 
-
         if (fileDto.getDeleteFiles() != null) {
             // 2. 파일 서버 업로드
             List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
@@ -78,6 +76,7 @@ public class PostServiceImpl implements PostService {
         Map map = new HashMap();
         map.put("pno", pno);
         map.put("bno", bno);
+        postMapper.increaseViewCnt(pno);
         return postMapper.selectOne(map);
     }
 
@@ -113,6 +112,8 @@ public class PostServiceImpl implements PostService {
 
     }
 
+
+
     @Override
     public int selectCount(int bno) {
         return postMapper.selectCount(bno);
@@ -120,19 +121,47 @@ public class PostServiceImpl implements PostService {
 
     /** 코멘트 관련 함수 **/
     @Override
-    public int deleteComment(int cno) {
-        return erpCommentMapper.delete(cno);
+    public int deleteComment(int cno, String password) {
+
+        int rowCnt = 0;
+
+        CommentDto commentDto = erpCommentMapper.select(cno);
+
+        if (commentDto.getPassword().equals(password)) {
+            rowCnt = erpCommentMapper.delete(cno);
+        }
+
+        return rowCnt;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertComment(CommentDto commentDto) {
+        postMapper.increaseCommentCnt(commentDto.getPno());
         return erpCommentMapper.insert(commentDto);
+    }
+
+    @Override
+    public CommentDto selectComment(int cno) {
+        return erpCommentMapper.select(cno);
     }
 
     @Override
     public List<CommentDto> selectCommentListByPost(int pno) {
         return erpCommentMapper.selectListByPost(pno);
     }
+
+    @Override
+    public List<AttachmentDto> selectAttachmentByPost(int pno) {
+        return attachmentMapper.selectListByPost(pno);
+    }
+
+    @Override
+    public AttachmentDto selectAttachment(int ano) {
+        AttachmentDto attachmentDto = attachmentMapper.select(ano);
+        return attachmentDto;
+    }
+
     /** 코멘트 관련 함수 **/
 
     private List<AttachmentDto> uploadFiles(int pno, MultipartFile[] uploadFiles) throws IOException {

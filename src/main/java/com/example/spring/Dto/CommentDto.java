@@ -18,5 +18,6 @@ public class CommentDto {
     private String password;
     private Date reg_date;
     private Date updt_date;
+    private String delete_flag;
     private List<CommentDto> replyCommentList;
 }

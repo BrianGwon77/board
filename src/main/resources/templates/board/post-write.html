@@ -23,6 +23,7 @@
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
         <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="pno" th:field="*{pno}">
             <input type="hidden" name="mode" th:value="${mode}">
             <article class="content-field">
                 <input type="text" placeholder="제목" th:field="*{title}">
@@ -34,11 +35,12 @@
                     <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{content}"></p>
                 </div>
             </article>
-            <div class="file-list-div">
+            <div class="file-list-div" id="file-list-div">
                 <input type="file" id="file-input" multiple="multiple" name="uploadFiles">
                 <label for="file-input" class="file-label"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</label>
                 <div class="file-sub-list-div">
-                    <ul class="file-ul" id="file-ul">
+                    <ul class="file-list" id="file-list">
+
                     </ul>
                 </div>
             </div>
@@ -59,7 +61,7 @@
             <input type="hidden" th:field="*{mode}">
             <article class="writer-info">
                 <input type="text" placeholder="글쓴이" th:field="*{writer}">
-                <input type="password" placeholder="비밀번호" th:field="*{password}">
+                <input type="password" placeholder="비밀번호" th:field="*{password}" th:readonly="${mode} eq 1 ? 'readonly' : 'false'">
                 <input type="text" placeholder="태그: 쉼표(,)를 이용하여 복수등록">
                 <div class="field-error" th:if="${#fields.hasErrors('writer')}">
                     <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{writer}"></p>
@@ -83,7 +85,7 @@
 
 <script>
 
-    let existingFiles = new DataTransfer();
+    document.getElementById('password').value = 1234;
 
     CKEDITOR.editorConfig = function( config ) {
         config.toolbarGroups = [
@@ -108,59 +110,114 @@
 
     CKEDITOR.replace( 'content' , {
         height: '500px',
+        removePlugins: 'elementspath',
     });
 
     function submit() {
         $('#form').submit();
     }
 
-    document.getElementById('file-input').addEventListener('change', function(event) {
+    let storedFileList = [];
 
-        let target = event.target;
+    document.getElementById('file-input').addEventListener('click', function(event){
+        storedFileList = [];
+        let fileInput = document.getElementById('file-input');
+        storedFileList = [...fileInput.files];
+    })
 
-        let ul = document.getElementById('file-ul');
-        ul.innerHTML = '';
-
-        Array.from(target.files).forEach(file => {
-            existingFiles.items.add(file);
-        });
-
-        target.files = existingFiles.files;
-
-        Array.from(target.files).forEach(file => {
-
-            let li = document.createElement('li');
-            let icon = document.createElement('i');
-            icon.className = 'fa-solid fa-x';
-
-            icon.addEventListener('click', function(event) {
-                let target = event.target;
-                removeFiles(target.parentNode.getAttribute('file-name'));
-                target.parentNode.remove();
-            })
-
-            li.innerHTML = file.name + `&nbsp;&nbsp;`;
-            li.setAttribute('file-name', file.name);
-            li.appendChild(icon);
-            ul.appendChild(li);
-        })
-
-    });
-        // 테스트 커밋 ditto
-    function removeFiles(name) {
+    document.getElementById('file-input').addEventListener('change', function (event) {
 
         let dt = new DataTransfer();
+        let fileList = [...storedFileList, ...event.target.files];
+
+        fileList.forEach(file=> {dt.items.add(file);})
+
+        reloadFileList(fileList);
+
+        event.target.files = dt.files;
+
+    })
+
+    function reloadFileList(fileList) {
+
+        let ul = document.getElementById('file-list');
         let fileInput = document.getElementById('file-input');
 
-        Array.from(fileInput.files)
-            .filter(file => file.name != name)
-            .forEach(file => {
-                dt.items.add(file);
+        ul.innerHTML = '';
+
+        fileList.map((file, index) => {
+
+            let li = document.createElement('li');
+
+            li.innerHTML = file.name + `&nbsp;&nbsp;`;
+            li.setAttribute('index', index);
+
+            let icon = document.createElement('i');
+            icon.className = 'fa-solid fa-xmark';
+
+            icon.addEventListener('click', function(event) {
+
+                let target = event.target;
+
+                target.parentNode.remove();
+
+                fileRemove(target.parentNode.getAttribute('index'));
+
             })
 
-        fileInput.files = dt.files;
-        existingFiles.files = dt.files;
+            li.appendChild(icon);
+
+            ul.appendChild(li);
+
+        })
 
     }
+
+    function fileRemove(targetIndex) {
+
+        let fileList = document.getElementById('file-input').files;
+
+        let dt = new DataTransfer();
+
+        Array.from(fileList)
+            .filter((file, index) => index != targetIndex)
+            .forEach(file => dt.items.add(file));
+
+
+        document.getElementById('file-input').files = dt.files;
+
+    }
+
+    /** drag and drop implement **/
+
+    $('#file-list-div').on('dragenter', function (event) {
+        event.preventDefault();
+    })
+
+    $('#file-list-div').on('dragover', function (event) {
+        event.preventDefault();
+    })
+
+    document.getElementById('file-list-div').addEventListener('drop', function (event) {
+
+        // block default event.
+        event.preventDefault();
+
+        let dt = new DataTransfer();
+
+        let fileInput = document.getElementById('file-input');
+
+        let fileList = [...fileInput.files, ...event.dataTransfer.files];
+
+        fileList.map(file => {
+            dt.items.add(file);
+        })
+
+        fileInput.files = dt.files;
+
+        reloadFileList([...dt.files]);
+    })
+
+    /** drag and drop implement **/
 
 </script>

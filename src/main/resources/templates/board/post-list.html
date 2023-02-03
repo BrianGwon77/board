@@ -27,7 +27,7 @@
             <tbody>
                 <tr th:each="postDto : ${postDtoList}">
                     <td th:text="${postDto.pno}"></td>
-                    <td th:text="${postDto.title}" th:onclick="|location.href='@{/board/read(bno=1, pno=${postDto.pno})}'|" class="title-td"></td>
+                    <td th:onclick="|location.href='@{/board/read(bno=${postDto.bno}, pno=${postDto.pno})}'|" class="title-td"><p>[[${postDto.title}]] ([[${postDto.comment_cnt}]])</p></td>
                     <td th:text="${postDto.writer}"></td>
                     <td th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd')}"></td>
                     <td th:text="${postDto.view_cnt}"></td>

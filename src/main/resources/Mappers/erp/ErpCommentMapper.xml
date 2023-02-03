@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.spring.Mapper.erp.ErpCommentMapperMapper">
+<mapper namespace="com.example.spring.Mapper.erp.ErpCommentMapper">
 
     <resultMap id="commentResultMap" type="com.example.spring.Dto.CommentDto">
         <result property="cno" column="cno"></result>
@@ -14,12 +14,14 @@
         <result property="password" column="password"></result>
         <result property="reg_date" column="reg_date"></result>
         <result property="updt_date" column="updt_date"></result>
-        <collection property="commentDtoList" column="pno" select="selectReplyCommentList" javaType="java.util.List"
+        <result property="delete_flag" column="delete_flag"></result>
+        <collection property="replyCommentList" column="cno" select="selectReplyCommentList" javaType="java.util.List"
                     ofType="com.example.spring.Dto.CommentDto"></collection>
     </resultMap>
 
     <sql id="select">
-        SELECT CNO
+        SELECT
+            CNO
              , PNO
              , PARENT_CNO
              , RECEIVER
@@ -28,13 +30,38 @@
              , PASSWORD
              , REG_DATE
              , UPDT_DATE
+             , DELETE_FLAG
         FROM SPRING_COMMENT
-        WHERE DELETE_FLAG = 'N'
     </sql>
 
     <select id="selectListByPost" resultMap="commentResultMap" parameterType="int">
         <include refid="select"/>
+        WHERE CNO IN (
+            SELECT
+                CNO
+            FROM SPRING_COMMENT
+            WHERE DELETE_FLAG = 'N' AND PARENT_CNO = 0
+
+            UNION ALL
+
+            SELECT
+            DISTINCT
+                A.CNO
+            FROM SPRING_COMMENT A
+            INNER JOIN SPRING_COMMENT B ON B.PARENT_CNO = A.CNO AND A.PARENT_CNO = 0
+            WHERE A.DELETE_FLAG = 'Y'AND B.DELETE_FLAG = 'N'
+        )
         AND PNO = #{pno}
+    </select>
+
+    <select id="select" resultType="com.example.spring.Dto.CommentDto" parameterType="int">
+        <include refid="select"/>
+        WHERE DELETE_FLAG = 'N' AND CNO = #{cno}
+    </select>
+
+    <select id="selectReplyCommentList" resultType="com.example.spring.Dto.CommentDto">
+        <include refid="select"/>
+        WHERE DELETE_FLAG = 'N' AND PARENT_CNO = #{cno}
     </select>
 
     <insert id="insert" parameterType="com.example.spring.Dto.CommentDto">
