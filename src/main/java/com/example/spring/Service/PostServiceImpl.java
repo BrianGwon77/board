@@ -187,10 +187,10 @@ public class PostServiceImpl implements PostService {
 
             AttachmentDto attachmentDto = new AttachmentDto();
             attachmentDto.setPno(pno);
-            attachmentDto.setFileName(fileName);
-            attachmentDto.setStorageName(storageName);
-            attachmentDto.setFileSize(fileSize);
-            attachmentDto.setFileOriginName(fileOriginName);
+            attachmentDto.setFile_name(fileName + extension);
+            attachmentDto.setStorage_name(storageName);
+            attachmentDto.setFile_size(fileSize);
+            attachmentDto.setFile_origin_name(fileOriginName);
 
             attachmentDtoList.add(attachmentDto);
 

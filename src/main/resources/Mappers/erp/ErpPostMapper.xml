@@ -67,7 +67,7 @@
         WHERE BNO = #{bno}
     </select>
 
-    <insert id="insert" parameterType="com.example.spring.Dto.PostDto">
+    <insert id="insert" parameterType="com.example.spring.Dto.PostDto" useGeneratedKeys="true" keyProperty="pno">
         INSERT INTO SPRING_POST ( BNO
                                  , TITLE
                                  , CONTENT

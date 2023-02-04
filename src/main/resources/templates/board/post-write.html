@@ -23,7 +23,7 @@
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
         <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="pno" th:field="*{pno}">
+            <input type="hidden" th:field="*{pno}">
             <input type="hidden" name="mode" th:value="${mode}">
             <article class="content-field">
                 <input type="text" placeholder="제목" th:field="*{title}">

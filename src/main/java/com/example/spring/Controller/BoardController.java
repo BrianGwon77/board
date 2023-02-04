@@ -114,25 +114,25 @@ public class BoardController {
     }
 
     @GetMapping("/download")
-    public void download(HttpServletResponse response, int ano) throws IOException {
+    public void download(int ano, HttpServletResponse response) throws IOException {
 
         // 1. 첨부파일 조회
         AttachmentDto attachmentDto = postService.selectAttachment(ano);
 
-        String folderPath = env.getProperty("spring.storage." + attachmentDto.getStorageName());
+        String folderPath = env.getProperty("spring.storage." + attachmentDto.getStorage_name());
 
-        File f = new File(folderPath + File.separator, attachmentDto.getFileName());
+        File f = new File(folderPath + File.separator, attachmentDto.getFile_name());
         // file 다운로드 설정
-        response.setContentType("application/download");
+        response.setContentType("application/download; utf-8");
         response.setContentLength((int)f.length());
-        response.setHeader("Content-disposition", "attachment;filename=\"" + attachmentDto.getFileName() + "\"");
+        response.setHeader("Content-Transfer-Encoding", "binary");
+        response.setHeader("Content-disposition", "attachment;filename=\"" + attachmentDto.getFile_name() + "\"");
         // response 객체를 통해서 서버로부터 파일 다운로드
         OutputStream os = response.getOutputStream();
         // 파일 입력 객체 생성
         FileInputStream fis = new FileInputStream(f);
         FileCopyUtils.copy(fis, os);
-        fis.close();
-        os.close();
+
     }
 
     @PostMapping("/delete/comment.do")

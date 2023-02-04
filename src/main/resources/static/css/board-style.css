@@ -158,7 +158,6 @@ button:hover {
     width: 100px;
 }
 
-
 .post-table thead th:nth-child(4),
 .post-table tr td:nth-child(2) {
     width: 100px;
@@ -191,7 +190,7 @@ button:hover {
 }
 
 .post {
-    height: 800px;
+    overflow: hidden;
     padding-top: 50px;
 }
 
@@ -451,7 +450,7 @@ li {
     margin: 0;
     padding: 5px 5px 5px 40px;
     list-style: none;
-    background-image: url("/images/folder_icon.png");
+    /*background-image: url('/images/etc.png');*/
     background-repeat: no-repeat;
     background-position: left center;
     background-size: 12px;

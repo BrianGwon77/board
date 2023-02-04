@@ -31,20 +31,20 @@
 
     <insert id="insertList" parameterType="java.util.List">
         INSERT INTO SPRING_ATTACHMENT (
-        PNO
-        , FILE_NAME
-        , FILE_ORIGIN_NAME
-        , STORAGE_NAME
-        , FILE_SIZE
+            PNO
+            , FILE_NAME
+            , FILE_ORIGIN_NAME
+            , STORAGE_NAME
+            , FILE_SIZE
         )
         VALUES
         <foreach collection="attachmentDtoList" item="item" separator=",">
             (
             #{item.pno}
-            , #{item.fileName}
-            , #{item.fileOriginName}
-            , #{item.storageName}
-            , #{item.fileSize}
+            , #{item.file_name}
+            , #{item.file_origin_name}
+            , #{item.storage_name}
+            , #{item.file_size}
             )
         </foreach>
     </insert>
