@@ -23,7 +23,7 @@ public class PageDto {
         this.totalCount = totalCount;
 
         this.navi = (int)Math.ceil(((double)page/naviSize));
-        this.beginPage = (navi-1)*naviSize + 1;
+        this.beginPage = (navi-1) * naviSize + 1;
         this.endPage = Math.min(naviSize*navi, (int)Math.ceil(((double)totalCount/pageSize)));
         this.showPrev = (page != 1) ? true : false;
         this.showNext = (page != (int)Math.ceil(((double)totalCount/pageSize))) ? true : false;

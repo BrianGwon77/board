@@ -1,4 +1,4 @@
-<html>
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <title>인탑스 구미사업장 게시판</title>
@@ -19,17 +19,31 @@
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
         <article class="content-field">
-            <a th:text="${postDto.title}"
-               style="display: block; border-bottom:1px solid black; margin-bottom: 20px; padding: 10px;"/>
+            <a class="board-title"># 자유게시판</a>
+            <div class="post-title" style="border-bottom:1px solid lightgray; margin-bottom: 20px; padding: 10px">
+                <a th:text="${postDto.title}" style="display: block; margin-bottom: 3px;">안녕하세요</a>
+                <div class="post-info">
+                    <div class="post-writer">
+                        <span style="margin-right: 5px">[[${postDto.writer}]]</span>
+                        <span class="post-date" th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd hh:mm:ss')}"></span>
+                    </div>
+                    <div class="post-view">
+                        <span style="margin-right: 5px">조회 [[${postDto.view_cnt}]]</span>
+                        <span class="post-comment-cnt">댓글 [[${postDto.comment_cnt}]]</span>
+                    </div>
+                </div>
+            </div>
             <textarea rows=5 cols="50" class="content" id="content" th:utext="${postDto.content}"></textarea>
         </article>
-        <article class="file-list">
+        <article th:if="${attachmentDtoList.size()} > 0" class="file-list">
             <div class="file-list-div" id="file-list-div">
                 <div class="file-sub-list-div">
                     <ul class="file-list" id="file-list">
-                        <li th:each="attachmentDto :  ${attachmentDtoList}" class="file-li" style="cursor: pointer;" th:text="${attachmentDto.file_origin_name}"  th:onclick="|location.href='@{/board/download(ano=${attachmentDto.ano})}'|"></li>
-                      <!--     th:extension="${#strings.substring(attachmentDto.file_origin_name, #strings.indexOf(attachmentDto.file_origin_name, '.')+1, #strings.length(attachmentDto.file_origin_name))}"-->
-                            <!--th:style="|background-image= url('/images/etc.png')|"-->
+                        <li th:each="attachmentDto :  ${attachmentDtoList}" class="file-li" style="cursor: pointer;"
+                            th:text="${attachmentDto.file_origin_name}"
+                            th:onclick="|location.href='@{/board/download(ano=${attachmentDto.ano})}'|"></li>
+                        <!--                              #strings.substring(attachmentDto.file_origin_name, #strings.indexOf(attachmentDto.file_origin_name, '.')+1, #strings.length(attachmentDto.file_origin_name))}"-->
+                        <!--th:style="|background-image= url('/images/etc.png')|"-->
 
                     </ul>
                 </div>
@@ -48,7 +62,7 @@
         </article>
         </form>
     </section>
-    <section class="comment-list-section">
+    <section th:if="${commentDtoList.size()} > 0" class="comment-list-section">
         <div class="comment-unit" th:each="commentDto : ${commentDtoList}">
             <p class="comment-list-writer" th:text="${commentDto.writer}">관리자</p>
             <p class="comment-list-content" th:cno="${commentDto.cno}"
@@ -91,21 +105,18 @@
 
 </html>
 
+
+<script th:inline="javascript">
+    let iconList = [[${iconList}]];
+</script>
+
 <script>
 
-    Array.from(document.getElementsByClassName('file-li')).forEach(item => {
-
-        let icon_list = ['xlsx', 'xls', 'hwp', 'hwpx', 'pdf', 'pptx', 'doc',' docx'];
-
-        let file_origin_name = item.textContent;
+    for (const element of document.getElementsByClassName('file-li')) {
+        let file_origin_name = element.textContent;
         let extension = file_origin_name.substring(file_origin_name.lastIndexOf('.') + 1, file_origin_name.length);
-        if (icon_list.indexOf(extension) >= 0) {
-            item.style.backgroundImage = 'url(' + '/images/' + extension + '.png' + ')';
-        }
-        else {
-            item.style.backgroundImage = 'url(' + '/images/' + 'etc.png' + ')';
-        }
-    })
+        element.style.backgroundImage = iconList.indexOf(extension) >= 0 ? 'url(/images/icon/' + extension + '.png)' : 'url(/images/icon/etc.png)'
+    }
 
     CKEDITOR.replace('content', {
         toolbarGroups: [{

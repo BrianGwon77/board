@@ -32,6 +32,9 @@
                     <td th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd')}"></td>
                     <td th:text="${postDto.view_cnt}"></td>
                 </tr>
+                <tr th:if="${pageDto.totalCount} <= 0">
+                    <td colspan="5">등록된 게시글이 존재하지 않습니다.</td>
+                </tr>
             </tbody>
         </table>
         <article class="btn-list">
@@ -39,7 +42,7 @@
         </article>
     </section>
     <section>
-        <div class="navi">
+        <div th:if="${pageDto.totalCount > 0}" class="navi">
             <a th:if="${pageDto.showPrev}" th:href="@{/board/list(bno=${param.bno},
              page=${pageDto.page}-1, pageSize=${pageDto.pageSize})}"><i class="fa-solid fa-caret-left"></i></a>
             <a th:each="num : ${#numbers.sequence(pageDto.beginPage, pageDto.endPage)}" th:text="${num}"

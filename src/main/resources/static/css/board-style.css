@@ -147,10 +147,8 @@ button:hover {
 .post-table thead th:nth-child(2),
 .post-table tr td:nth-child(2) {
     width: 600px;
-}
-
-.post-table tr td:nth-child(2):hover {
-    text-decoration: underline;
+    text-align: left;
+    cursor: pointer;
 }
 
 .post-table thead th:nth-child(3),
@@ -227,7 +225,7 @@ button:hover {
 
 .file-list-div {
     margin-top: 10px;
-    padding: 30px;
+    padding: 10px;
     background-color: #F8F8F8;
     border-radius: 2px;
 }
@@ -324,7 +322,6 @@ input[type=file] {
 .file-sub-list-div {
     margin-top: 10px;
     border-top: 1px solid gray;
-    padding: 5px;
 }
 
 .comment-list-section {
@@ -453,5 +450,54 @@ li {
     /*background-image: url('/images/etc.png');*/
     background-repeat: no-repeat;
     background-position: left center;
-    background-size: 12px;
+    background-size: 20px;
+}
+
+
+.post-info {
+    overflow: hidden;
+}
+
+.post-info div {
+    display: inline;
+}
+
+.post-writer {
+    float: left;
+}
+
+.post-view {
+    float: right;
+}
+
+.post-comment-cnt {
+    background-color: #F38B3C;
+    background-blend-mode: soft-light;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.post-info span {
+    position: relative;
+}
+
+.post-info .post-comment-cnt::before,
+.post-info .post-date::before{
+    content: '';
+    background-color: lightgray;
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    left: -5%
+}
+
+.board-title {
+    display: block;
+    height: 40px;
+    padding: 5px 0px 0px 10px;
+    margin: 0px 0px 10px 0px;
+    font-size: 20px;
+    font-weight: 550;
+    color: #F38B3C;
+    border-bottom: 1px solid #F38B3C;
 }

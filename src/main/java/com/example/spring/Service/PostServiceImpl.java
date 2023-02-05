@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,9 @@ public class PostServiceImpl implements PostService {
 
     @Value("${spring.board.storage-name}")
     String storageName;
+
+    @Value("${spring.storage.icon}")
+    String iconStroage;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -55,7 +59,7 @@ public class PostServiceImpl implements PostService {
         // 1. 게시글 정보등록
         postMapper.update(postDto);
 
-        if (fileDto.getDeleteFiles() != null) {
+        if (fileDto.getUploadFiles() != null) {
             // 2. 파일 서버 업로드
             List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
             // 3. AttachmentDto DB 등록
@@ -83,9 +87,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public int delete(PostDto postDto) {
 
-        PostDto selectedPost = selectOne(postDto.getBno(),  postDto.getPno());
+        PostDto selectedPost = selectOne(postDto.getBno(), postDto.getPno());
 
-        if (selectedPost.getPassword().equals(postDto.getPassword())){
+        if (selectedPost.getPassword().equals(postDto.getPassword())) {
             Map map = new HashMap();
             map.put("pno", postDto.getPno());
             map.put("bno", postDto.getBno());
@@ -96,12 +100,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> selectPage(int limit, int offset) {
+    public List<PostDto> selectPage(int limit, int offset, int bno) {
 
         // limit & offest 값
         Map map = new HashMap();
         map.put("limit", limit);
         map.put("offset", offset);
+        map.put("bno", bno);
 
         List<PostDto> postDtoList = postMapper.selectPage(map);
 
@@ -113,13 +118,14 @@ public class PostServiceImpl implements PostService {
     }
 
 
-
     @Override
     public int selectCount(int bno) {
         return postMapper.selectCount(bno);
     }
 
-    /** 코멘트 관련 함수 **/
+    /**
+     * 코멘트 관련 함수
+     **/
     @Override
     public int deleteComment(int cno, String password) {
 
@@ -162,8 +168,9 @@ public class PostServiceImpl implements PostService {
         return attachmentDto;
     }
 
-    /** 코멘트 관련 함수 **/
-
+    /**
+     * 코멘트 관련 함수
+     **/
     private List<AttachmentDto> uploadFiles(int pno, MultipartFile[] uploadFiles) throws IOException {
 
         List<AttachmentDto> attachmentDtoList = new ArrayList<AttachmentDto>();
@@ -171,6 +178,9 @@ public class PostServiceImpl implements PostService {
         for (int i = 0; i < uploadFiles.length; i++) {
 
             MultipartFile file = uploadFiles[i];
+
+            if (file.isEmpty())
+                break;
 
             UUID uuid = UUID.randomUUID();
             String[] uuids = uuid.toString().split("-");
@@ -197,5 +207,14 @@ public class PostServiceImpl implements PostService {
         }
 
         return attachmentDtoList;
+    }
+
+    @Override
+    public List<String> getIconList() {
+        File iconDirecotry = new File(iconStroage);
+        String[] iconList = iconDirecotry.list();
+        return Arrays.stream(iconList).map(icon ->
+            icon.substring(0, icon.lastIndexOf('.'))
+        ).collect(Collectors.toList());
     }
 }

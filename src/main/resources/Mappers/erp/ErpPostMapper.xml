@@ -45,7 +45,7 @@
                     , *
                 FROM SPRING_POST
             ) A
-        WHERE ROW_NUMBER BETWEEN #{offset} AND #{limit}
+        WHERE ROW_NUMBER BETWEEN #{offset} AND #{limit} AND BNO = #{bno}
     </select>
 
     <update id="increaseViewCnt" parameterType="int">

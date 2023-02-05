@@ -5,6 +5,7 @@ import com.example.spring.Exception.BadRequestException;
 import com.example.spring.Service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.tools.web.BadHttpRequest;
+import org.apache.tomcat.jni.Directory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,7 +51,7 @@ public class BoardController {
         int limit = page * pageSize;
 
         // 해당 페이지의 게시글 목록
-        List<PostDto> postDtoList = postService.selectPage(limit, offset);
+        List<PostDto> postDtoList = postService.selectPage(limit, offset, bno);
 
         // 전체 게시글 갯수
         int totalCount = postService.selectCount(bno);
@@ -97,14 +98,30 @@ public class BoardController {
 
     @GetMapping("/read")
     public String read(int bno, int pno, Model model) {
+
+        // 1. 게시글 정보
         PostDto postDto = postService.selectOne(bno, pno);
+
+        // 2. 작성된 댓글 목록 정보
         List<CommentDto> commentDtoList = postService.selectCommentListByPost(pno);
+
+        // 3. 사용자 작성 댓글 정보 - Empty 객체
+        CommentDto commentDto = new CommentDto();
+
+        // 4. 첨부파일 정보
         List<AttachmentDto> attachmentDtoList = postService.selectAttachmentByPost(pno);
+
+        // 5. 아이콘 리스트
+        List<String> iconList = postService.getIconList();
+
         model.addAttribute("postDto", postDto);
-        model.addAttribute("commentDto", new CommentDto());
+        model.addAttribute("commentDto", commentDto);
         model.addAttribute("commentDtoList", commentDtoList);
         model.addAttribute("attachmentDtoList", attachmentDtoList);
+        model.addAttribute("iconList", iconList);
+
         return "/board/post-read";
+
     }
 
     @PostMapping("/write/comment.do")
@@ -156,7 +173,6 @@ public class BoardController {
 
     }
 
-
     @PostMapping("/certificate.do")
     public String certificate_do(PostDto postDto, Model model) {
 
@@ -171,4 +187,8 @@ public class BoardController {
         model.addAttribute("postDto", postDto);
         return "/board/certificate";
     }
+
+
+
+
 }

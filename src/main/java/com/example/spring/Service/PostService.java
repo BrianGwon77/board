@@ -15,19 +15,18 @@ public interface PostService {
     int update(PostDto postDto, FileDto fileDto) throws IOException;
     PostDto selectOne(int bno, int pno);
     int delete(PostDto postDto);
-    List<PostDto> selectPage(int limit, int offset);
+    List<PostDto> selectPage(int limit, int offset, int bno);
     int selectCount(int bno);
 
     /** 코멘트 관련 함수 **/
     public int deleteComment(int cno, String password);
     public int insertComment(CommentDto commentDto);
-
     CommentDto selectComment(int cno);
-
     public List<CommentDto> selectCommentListByPost(int pno);
 
     /** 첨부파일 관련 함수 **/
     public AttachmentDto selectAttachment(int ano);
     public List<AttachmentDto> selectAttachmentByPost(int pno);
+    public List<String> getIconList();
 
 }
