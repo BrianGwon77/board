@@ -12,6 +12,7 @@ public interface ErpCommentMapper {
     public int insert(CommentDto commentDto);
     public int delete(int cno);
     public int deleteListByPost(int pno);
+    public int selectCommentCountByPost(int pno);
     public CommentDto select(int cno);
     public List<CommentDto> selectListByPost(int pno);
 }

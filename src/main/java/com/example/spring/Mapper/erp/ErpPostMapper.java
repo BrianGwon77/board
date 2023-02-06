@@ -13,6 +13,7 @@ public interface ErpPostMapper {
     public int selectCount(int bno);
     public int increaseViewCnt(int pno);
     public int increaseCommentCnt(int pno);
+    public int decreaseCommentCount(int pno);
     public PostDto selectOne(Map map);
     public List<PostDto> selectPage(Map map);
 }

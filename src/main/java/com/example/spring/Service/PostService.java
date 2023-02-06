@@ -13,6 +13,7 @@ public interface PostService {
     /** 포스트 관련 함수 **/
     int register(PostDto postDto, FileDto fileDto) throws IOException;
     int update(PostDto postDto, FileDto fileDto) throws IOException;
+    int selectCommentCountByPost(int pno);
     PostDto selectOne(int bno, int pno);
     int delete(PostDto postDto);
     List<PostDto> selectPage(int limit, int offset, int bno);

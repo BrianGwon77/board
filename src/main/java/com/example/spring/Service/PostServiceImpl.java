@@ -45,7 +45,8 @@ public class PostServiceImpl implements PostService {
             // 2. 파일 서버 업로드
             List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
             // 3. AttachmentDto DB 등록
-            attachmentMapper.insertList(attachmentDtoList);
+            if (attachmentDtoList != null && attachmentDtoList.size() > 0)
+                attachmentMapper.insertList(attachmentDtoList);
         }
 
         return 0;
@@ -59,12 +60,11 @@ public class PostServiceImpl implements PostService {
         // 1. 게시글 정보등록
         postMapper.update(postDto);
 
-        if (fileDto.getUploadFiles() != null) {
-            // 2. 파일 서버 업로드
-            List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
-            // 3. AttachmentDto DB 등록
+        // 2. 파일 서버 업로드
+        List<AttachmentDto> attachmentDtoList = uploadFiles(postDto.getPno(), fileDto.getUploadFiles());
+        // 3. AttachmentDto DB 등록
+        if (attachmentDtoList != null && attachmentDtoList.size() > 0)
             attachmentMapper.insertList(attachmentDtoList);
-        }
 
         if (fileDto.getDeleteFiles() != null) {
             // 4. 삭제대상 파일 제거
@@ -127,6 +127,7 @@ public class PostServiceImpl implements PostService {
      * 코멘트 관련 함수
      **/
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteComment(int cno, String password) {
 
         int rowCnt = 0;
@@ -135,6 +136,7 @@ public class PostServiceImpl implements PostService {
 
         if (commentDto.getPassword().equals(password)) {
             rowCnt = erpCommentMapper.delete(cno);
+            postMapper.decreaseCommentCount(commentDto.getPno());
         }
 
         return rowCnt;
@@ -214,7 +216,12 @@ public class PostServiceImpl implements PostService {
         File iconDirecotry = new File(iconStroage);
         String[] iconList = iconDirecotry.list();
         return Arrays.stream(iconList).map(icon ->
-            icon.substring(0, icon.lastIndexOf('.'))
+                icon.substring(0, icon.lastIndexOf('.'))
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public int selectCommentCountByPost(int pno) {
+        return erpCommentMapper.selectCommentCountByPost(pno);
     }
 }

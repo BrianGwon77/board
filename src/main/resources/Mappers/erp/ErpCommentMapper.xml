@@ -93,4 +93,11 @@
         WHERE PNO = #{pno}
     </delete>
 
+    <select id="selectCountByPost" resultType="int">
+        SELECT
+            COUNT (*)
+        FROM SPRING_COMMENT
+        WHERE PNO = #{pno}
+    </select>
+
 </mapper>

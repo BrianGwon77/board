@@ -24,8 +24,8 @@
                 <a th:text="${postDto.title}" style="display: block; margin-bottom: 3px;">안녕하세요</a>
                 <div class="post-info">
                     <div class="post-writer">
-                        <span style="margin-right: 5px">[[${postDto.writer}]]</span>
-                        <span class="post-date" th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd hh:mm:ss')}"></span>
+                        <span style="margin-right: 10px">[[${postDto.writer}]]</span>
+                        <span class="post-date" th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd HH:mm:ss')}"></span>
                     </div>
                     <div class="post-view">
                         <span style="margin-right: 5px">조회 [[${postDto.view_cnt}]]</span>
@@ -68,9 +68,10 @@
             <p class="comment-list-content" th:cno="${commentDto.cno}"
                th:style="${commentDto.delete_flag} == 'Y' ? 'color: gray; font-weight: 500;' : ''"
                th:receiver="${commentDto.writer}"
+               th:pno="${commentDto.pno}"
                th:text="${commentDto.delete_flag == 'N'} ? ${commentDto.content} : '작성자가 삭제한 댓글입니다.'"
                th:onclick="${commentDto.delete_flag == 'N'} ? 'add_reply_form(this)' : ''"></p>
-            <p th:if="${commentDto.delete_flag == 'N'}" class="remove-btn" th:pno="${commentDto.pno}"><i
+            <p th:if="${commentDto.delete_flag == 'N'}" class="remove-btn" ><i
                     class="fa-solid fa-xmark" th:onclick="addCommentRemoveForm(this)" th:cno="${commentDto.cno}"></i>
             </p>
             <div class="reply-comment-unit" th:each="replyCommentDto : ${commentDto.replyCommentList}">
@@ -205,6 +206,7 @@
 
         editor_area.appendChild(comment_editor);
         editor_area.appendChild(comment_reg_btn);
+        editor_area.appendChild(comment_pno);
         editor_area.appendChild(comment_cno);
         editor_area.appendChild(comment_receiver);
 

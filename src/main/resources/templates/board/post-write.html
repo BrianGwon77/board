@@ -1,4 +1,4 @@
-<html>
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <title>인탑스 구미사업장 게시판</title>
@@ -22,7 +22,8 @@
     <header th:replace="~{/board/board-header :: board-header}"></header>
     <section th:replace="~{/board/board-header :: board-list}"></section>
     <section class="post">
-        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post" enctype="multipart/form-data">
+        <form th:id="form" th:object="${postDto}" th:action="@{/board/write.do}" method="post"
+              enctype="multipart/form-data">
             <input type="hidden" th:field="*{pno}">
             <input type="hidden" name="mode" th:value="${mode}">
             <article class="content-field">
@@ -40,7 +41,9 @@
                 <label for="file-input" class="file-label"><i class="fa-regular fa-file"></i>&nbsp;&nbsp;파일 첨부</label>
                 <div class="file-sub-list-div">
                     <ul class="file-list" id="file-list">
-
+                        <li th:each="attachmentDto :  ${attachmentDtoList}" class="file-li" style="cursor: pointer;"
+                            th:type="old" th:file-name="${attachmentDto.file_origin_name}">
+                            [[${attachmentDto.file_origin_name}]]<i class="fa-solid fa-xmark file-remove-btn" style="margin-left: 10px"></i></li>
                     </ul>
                 </div>
             </div>
@@ -61,7 +64,8 @@
             <input type="hidden" th:field="*{mode}">
             <article class="writer-info">
                 <input type="text" placeholder="글쓴이" th:field="*{writer}">
-                <input type="password" placeholder="비밀번호" th:field="*{password}" th:readonly="${mode} eq 1 ? 'readonly' : 'false'">
+                <input type="password" placeholder="비밀번호" th:field="*{password}"
+                       th:readonly="${mode} eq 1 ? 'readonly' : 'false'">
                 <input type="text" placeholder="태그: 쉼표(,)를 이용하여 복수등록">
                 <div class="field-error" th:if="${#fields.hasErrors('writer')}">
                     <i class="fa-sharp fa-solid fa-circle-exclamation"></i>&nbsp;&nbsp;<p th:errors="*{writer}"></p>
@@ -83,32 +87,60 @@
 
 </html>
 
+<script th:inline="javascript">
+    let iconList = [[${iconList}]];
+</script>
+
 <script>
+
+    reloadFileIcon();
+    addRemoveFileEventListener();
+
+    function reloadFileIcon() {
+        for (const element of document.getElementsByClassName('file-li')) {
+            let file_origin_name = element.getAttribute("file-name");
+            let extension = file_origin_name.substring(file_origin_name.lastIndexOf('.') + 1, file_origin_name.length);
+            element.style.backgroundImage = iconList.indexOf(extension) >= 0 ? 'url(/images/icon/' + extension + '.png)' : 'url(/images/icon/etc.png)'
+        }
+    }
+
+    function removeFileList(event) {
+        let target = event.target;
+        if (target.parentNode.getAttribute("type") == "new")
+            removeFile(target.parentNode.getAttribute('index'));
+        target.parentNode.remove();
+    }
+
+    function addRemoveFileEventListener() {
+        for (const element of document.getElementsByClassName('file-remove-btn')) {
+            element.addEventListener('click', (event) => removeFileList(event));
+        }
+    }
 
     document.getElementById('password').value = 1234;
 
-    CKEDITOR.editorConfig = function( config ) {
+    CKEDITOR.editorConfig = function (config) {
         config.toolbarGroups = [
-            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-            { name: 'forms', groups: [ 'forms' ] },
+            {name: 'document', groups: ['mode', 'document', 'doctools']},
+            {name: 'clipboard', groups: ['clipboard', 'undo']},
+            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
+            {name: 'forms', groups: ['forms']},
             '/',
-            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
-            { name: 'links', groups: [ 'links' ] },
-            { name: 'insert', groups: [ 'insert' ] },
+            {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
+            {name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph']},
+            {name: 'links', groups: ['links']},
+            {name: 'insert', groups: ['insert']},
             '/',
-            { name: 'styles', groups: [ 'styles' ] },
-            { name: 'colors', groups: [ 'colors' ] },
-            { name: 'tools', groups: [ 'tools' ] },
-            { name: 'others', groups: [ 'others' ] },
-            { name: 'about', groups: [ 'about' ] }
+            {name: 'styles', groups: ['styles']},
+            {name: 'colors', groups: ['colors']},
+            {name: 'tools', groups: ['tools']},
+            {name: 'others', groups: ['others']},
+            {name: 'about', groups: ['about']}
         ];
 
     };
 
-    CKEDITOR.replace( 'content' , {
+    CKEDITOR.replace('content', {
         height: '500px',
         removePlugins: 'elementspath',
     });
@@ -119,7 +151,7 @@
 
     let storedFileList = [];
 
-    document.getElementById('file-input').addEventListener('click', function(event){
+    document.getElementById('file-input').addEventListener('click', function (event) {
         storedFileList = [];
         let fileInput = document.getElementById('file-input');
         storedFileList = [...fileInput.files];
@@ -130,7 +162,9 @@
         let dt = new DataTransfer();
         let fileList = [...storedFileList, ...event.target.files];
 
-        fileList.forEach(file=> {dt.items.add(file);})
+        fileList.forEach(file => {
+            dt.items.add(file);
+        })
 
         reloadFileList(fileList);
 
@@ -143,37 +177,43 @@
         let ul = document.getElementById('file-list');
         let fileInput = document.getElementById('file-input');
 
-        ul.innerHTML = '';
+        Array.from(document.getElementsByClassName('file-li')).filter(element => element.getAttribute("type") == "new").forEach(item=> item.remove());
+
+        // for (const li of document.getElementsByClassName('file-li')) {
+        //     console.log(li.innerHTML);
+        //     if (li.getAttribute("type") == "new") {
+        //         li.remove();
+        //     }
+        // }
+        // console.log(...fileList);
 
         fileList.map((file, index) => {
 
             let li = document.createElement('li');
 
-            li.innerHTML = file.name + `&nbsp;&nbsp;`;
+            li.innerHTML = file.name;
             li.setAttribute('index', index);
+            li.setAttribute('type', 'new');
+            li.setAttribute('file-name', file.name);
+            li.className = 'file-li';
 
             let icon = document.createElement('i');
-            icon.className = 'fa-solid fa-xmark';
-
-            icon.addEventListener('click', function(event) {
-
-                let target = event.target;
-
-                target.parentNode.remove();
-
-                fileRemove(target.parentNode.getAttribute('index'));
-
-            })
+            icon.className = 'fa-solid fa-xmark file-remove-btn';
+            icon.style.marginLeft = '10px';
 
             li.appendChild(icon);
 
             ul.appendChild(li);
 
+            addRemoveFileEventListener();
+
         })
+
+        reloadFileIcon();
 
     }
 
-    function fileRemove(targetIndex) {
+    function removeFile(targetIndex) {
 
         let fileList = document.getElementById('file-input').files;
 
@@ -215,7 +255,10 @@
 
         fileInput.files = dt.files;
 
+        console.log(dt.files);
+
         reloadFileList([...dt.files]);
+
     })
 
     /** drag and drop implement **/

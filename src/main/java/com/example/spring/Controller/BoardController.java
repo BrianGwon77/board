@@ -69,7 +69,9 @@ public class BoardController {
     @GetMapping("/write")
     public String write(Model model) {
         PostDto postDto = new PostDto();
+        List<String> iconList = postService.getIconList();
         model.addAttribute("postDto", postDto);
+        model.addAttribute("iconList", iconList);
         model.addAttribute("mode", CREATE);
         return "/board/post-write";
     }
@@ -143,7 +145,7 @@ public class BoardController {
         response.setContentType("application/download; utf-8");
         response.setContentLength((int)f.length());
         response.setHeader("Content-Transfer-Encoding", "binary");
-        response.setHeader("Content-disposition", "attachment;filename=\"" + attachmentDto.getFile_name() + "\"");
+        response.setHeader("Content-disposition", "attachment;filename=\"" + attachmentDto.getFile_origin_name() + "\"");
         // response 객체를 통해서 서버로부터 파일 다운로드
         OutputStream os = response.getOutputStream();
         // 파일 입력 객체 생성
@@ -179,7 +181,11 @@ public class BoardController {
         PostDto selectedPostDto = postService.selectOne(postDto.getBno(), postDto.getPno());
 
         if (selectedPostDto.getWriter().equals(postDto.getWriter()) && selectedPostDto.getPassword().equals(postDto.getPassword())) {
+            List<AttachmentDto> attachmentDtoList = postService.selectAttachmentByPost(selectedPostDto.getPno());
+            List<String> iconList = postService.getIconList();
             model.addAttribute("postDto", selectedPostDto);
+            model.addAttribute("attachmentDtoList", attachmentDtoList);
+            model.addAttribute("iconList", iconList);
             model.addAttribute("mode", UPDATE);
             return "/board/post-write";
         }

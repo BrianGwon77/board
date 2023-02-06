@@ -60,6 +60,12 @@
         WHERE PNO = #{pno}
     </update>
 
+    <update id="decreaseCommentCount" parameterType="int">
+        UPDATE SPRING_POST
+        SET COMMENT_CNT = COMMENT_CNT - 1
+        WHERE PNO = #{pno}
+    </update>
+
     <select id="selectCount" parameterType="int" resultType="int">
         SELECT
             ISNULL(COUNT (*), 0) AS COUNT

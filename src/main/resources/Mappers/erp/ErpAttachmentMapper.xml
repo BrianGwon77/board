@@ -28,7 +28,6 @@
         AND ANO = #{ano}
     </select>
 
-
     <insert id="insertList" parameterType="java.util.List">
         INSERT INTO SPRING_ATTACHMENT (
             PNO
