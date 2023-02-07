@@ -16,7 +16,7 @@ public interface PostService {
     int selectCommentCountByPost(int pno);
     PostDto selectOne(int bno, int pno);
     int delete(PostDto postDto);
-    List<PostDto> selectPage(int limit, int offset, int bno);
+    List<PostDto> selectPage(int limit, int offset, int bno, int type, String keyword);
     int selectCount(int bno);
 
     /** 코멘트 관련 함수 **/

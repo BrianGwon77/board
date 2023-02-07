@@ -42,26 +42,26 @@
                 <div class="file-sub-list-div">
                     <ul class="file-list" id="file-list">
                         <li th:each="attachmentDto :  ${attachmentDtoList}" class="file-li" style="cursor: pointer;"
-                            th:type="old" th:file-name="${attachmentDto.file_origin_name}">
+                            th:type="old" th:uuid="${attachmentDto.file_name}" th:file-name="${attachmentDto.file_origin_name}">
                             [[${attachmentDto.file_origin_name}]]<i class="fa-solid fa-xmark file-remove-btn" style="margin-left: 10px"></i></li>
                     </ul>
                 </div>
             </div>
             <article class="check-list">
-                <input type="checkbox" id="secret-check">
+                <input type="checkbox" id="secret-check" name="secret_check">
                 <label for="secret-check">
                     비밀글 기능
                 </label>
                 <span class="secret-check-info">
                     <i class="fa-sharp fa-solid fa-circle-info"></i>&nbsp;&nbsp;비밀글 : 관리자만 글을 읽을 수 있도록 설정합니다.
                 </span>
-                <input type="checkbox" id="comment-allow-check" checked>
+                <input type="checkbox" id="comment-allow-check" name="comment_check" checked>
                 <label for="comment-allow-check">댓글 허용</label>
                 <span class="secret-check-info"><i class="fa-sharp fa-solid fa-circle-info"></i>&nbsp;&nbsp;
                     댓글허용 : 다른 사용자가 댓글을 달 수 있게합니다.
                 </span>
             </article>
-            <input type="hidden" th:field="*{mode}">
+            <input type="hidden" th:value="${mode}" name="mode">
             <article class="writer-info">
                 <input type="text" placeholder="글쓴이" th:field="*{writer}">
                 <input type="password" placeholder="비밀번호" th:field="*{password}"
@@ -76,7 +76,7 @@
             </article>
             <article class="btn-list">
                 <button class="confirm-btn" th:onclick="submit()">확인</button>
-                <button class="cancel-btn">취소</button>
+                <input type="button" class="cancel-btn" th:value="취소" th:onclick="|location.href='@{/board/read(pno=${postDto.pno}, bno=${postDto.bno})}'|"></input>
             </article>
         </form>
     </section>
@@ -93,6 +93,18 @@
 
 <script>
 
+    let checkboxList = document.querySelectorAll("input[type=checkbox]");
+
+    Array.from(checkboxList).forEach(item => item.addEventListener('change', function(event) {
+
+        if (event.target.checked)
+            event.target.value = 1;
+        else
+            event.target.value = 0;
+
+    }))
+
+
     reloadFileIcon();
     addRemoveFileEventListener();
 
@@ -108,6 +120,17 @@
         let target = event.target;
         if (target.parentNode.getAttribute("type") == "new")
             removeFile(target.parentNode.getAttribute('index'));
+        else {
+            let uuid = target.parentNode.getAttribute("uuid");
+            let form = document.getElementById('form');
+
+            let input = document.createElement('input');
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "deleteFiles");
+            input.setAttribute("value", uuid);
+
+            form.appendChild(input);
+        }
         target.parentNode.remove();
     }
 

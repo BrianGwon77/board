@@ -34,7 +34,8 @@ body {
     cursor: pointer;
 }
 
-button {
+button,
+input[type=button]{
     cursor: pointer;
     background-color: #F38B3C;
     border: 0px;
@@ -45,6 +46,10 @@ button {
 }
 
 button:hover {
+    box-shadow: 0 0 5px orange;
+}
+
+input[type=button]:hover {
     box-shadow: 0 0 5px orange;
 }
 
@@ -174,17 +179,19 @@ button:hover {
 
 .navi a {
     text-decoration: none;
-    font-size: 20px;
+    font-size: 16px;
     color: black;
-    padding: 10px;
-    opacity: 0.6;
-    transition: 0.5s;
-    font-weight: 600;
+    padding: 5px;
+    border-radius: 2px;
+    display: inline-block;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
 }
 
 .navi a:hover {
-    opacity: 1;
-    text-decoration: underline;
+    border: 1px solid #F38B3C;
+    color: #F38B3C;
 }
 
 .post {
@@ -500,4 +507,9 @@ li {
     font-weight: 550;
     color: #F38B3C;
     border-bottom: 1px solid #F38B3C;
+}
+
+.search-condition,
+.search-box .search-keyword {
+    padding: 7px;
 }

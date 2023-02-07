@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class BoardController {
 
     private final int CREATE = 0;
     private final int UPDATE = 1;
+    private final int DELETE = 2;
 
     private final Environment env;
 
@@ -42,6 +45,8 @@ public class BoardController {
     public String list(@RequestParam(required = true) int bno,
                        @RequestParam(required = false, defaultValue = "1") int page,
                        @RequestParam(required = false, defaultValue = "10") int pageSize,
+                       @RequestParam(required = false, defaultValue = "0") int type,
+                       @RequestParam(required = false, defaultValue = "") String keyword,
                        Model model) {
 
         // 시작 글 번호
@@ -51,7 +56,7 @@ public class BoardController {
         int limit = page * pageSize;
 
         // 해당 페이지의 게시글 목록
-        List<PostDto> postDtoList = postService.selectPage(limit, offset, bno);
+        List<PostDto> postDtoList = postService.selectPage(limit, offset, bno, type, keyword);
 
         // 전체 게시글 갯수
         int totalCount = postService.selectCount(bno);
@@ -86,15 +91,15 @@ public class BoardController {
             } else {
                 postService.update(postDto, fileDto);
             }
-
             return "redirect:/board/list?bno=" + postDto.getBno();
         }
         return "/board/post-write";
     }
 
     @GetMapping("/certificate")
-    public String certificate(PostDto postDto, Model model) {
+    public String certificate(PostDto postDto, int mode, Model model) {
         model.addAttribute("postDto", postDto);
+        model.addAttribute("mode", mode);
         return "/board/certificate";
     }
 
@@ -133,7 +138,7 @@ public class BoardController {
     }
 
     @GetMapping("/download")
-    public void download(int ano, HttpServletResponse response) throws IOException {
+    public void download(@RequestHeader("User-Agent") String userAgent, int ano, HttpServletResponse response) throws IOException {
 
         // 1. 첨부파일 조회
         AttachmentDto attachmentDto = postService.selectAttachment(ano);
@@ -142,10 +147,20 @@ public class BoardController {
 
         File f = new File(folderPath + File.separator, attachmentDto.getFile_name());
         // file 다운로드 설정
+
+        String downloadName;
+
+        if (userAgent.contains("Trident"))
+            downloadName = URLEncoder.encode(attachmentDto.getFile_origin_name(), "UTF-8").replaceAll("\\+", "");
+        else if (userAgent.contains("Edge"))
+            downloadName = URLEncoder.encode(attachmentDto.getFile_origin_name(), "UTF-8");
+        else
+            downloadName = new String(attachmentDto.getFile_origin_name().getBytes("UTF-8"), "ISO-8859-1");
+
         response.setContentType("application/download; utf-8");
-        response.setContentLength((int)f.length());
+        response.setContentLength((int) f.length());
         response.setHeader("Content-Transfer-Encoding", "binary");
-        response.setHeader("Content-disposition", "attachment;filename=\"" + attachmentDto.getFile_origin_name() + "\"");
+        response.setHeader("Content-disposition", "attachment;filename=\"" + downloadName + "\"");
         // response 객체를 통해서 서버로부터 파일 다운로드
         OutputStream os = response.getOutputStream();
         // 파일 입력 객체 생성
@@ -176,25 +191,31 @@ public class BoardController {
     }
 
     @PostMapping("/certificate.do")
-    public String certificate_do(PostDto postDto, Model model) {
+    public String certificate_do(PostDto postDto, int mode, Model model) {
 
         PostDto selectedPostDto = postService.selectOne(postDto.getBno(), postDto.getPno());
 
         if (selectedPostDto.getWriter().equals(postDto.getWriter()) && selectedPostDto.getPassword().equals(postDto.getPassword())) {
-            List<AttachmentDto> attachmentDtoList = postService.selectAttachmentByPost(selectedPostDto.getPno());
-            List<String> iconList = postService.getIconList();
-            model.addAttribute("postDto", selectedPostDto);
-            model.addAttribute("attachmentDtoList", attachmentDtoList);
-            model.addAttribute("iconList", iconList);
-            model.addAttribute("mode", UPDATE);
-            return "/board/post-write";
+
+            if (mode == UPDATE) {
+                List<AttachmentDto> attachmentDtoList = postService.selectAttachmentByPost(selectedPostDto.getPno());
+                List<String> iconList = postService.getIconList();
+                model.addAttribute("postDto", selectedPostDto);
+                model.addAttribute("attachmentDtoList", attachmentDtoList);
+                model.addAttribute("iconList", iconList);
+                model.addAttribute("mode", UPDATE);
+                return "/board/post-write";
+            }
+
+            else {
+                postService.delete(postDto);
+                return "/board/list?bno=" + postDto.getBno();
+            }
         }
 
         model.addAttribute("postDto", postDto);
         return "/board/certificate";
     }
-
-
 
 
 }

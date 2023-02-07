@@ -27,5 +27,6 @@ public class PostDto {
     private int comment_cnt;
     private Date reg_date;
     private Date updt_date;
-    private String mode;
+    private int secret_check;
+    private int comment_check;
 }

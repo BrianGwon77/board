@@ -53,7 +53,7 @@
         SET DELETE_FLAG = 'Y'
         , UPDT_DATE = GETDATE()
         WHERE FILE_NAME IN
-        <foreach collection="deleteFileList" item="item" separator="," open="(" close=")">
+        <foreach collection="deleteFiles" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
     </delete>

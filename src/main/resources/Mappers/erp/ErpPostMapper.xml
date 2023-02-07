@@ -17,6 +17,8 @@
             , COMMENT_CNT
             , REG_DATE
             , UPDT_DATE
+            , SECRET_CHECK
+            , COMMENT_CHECK
         FROM SPRING_POST
         WHERE DELETE_FLAG = 'N'
     </sql>
@@ -26,26 +28,8 @@
         AND BNO = #{bno} AND PNO = #{pno}
     </select>
 
-    <select id="selectPage" resultType="com.example.spring.Dto.PostDto" parameterType="Map">
-        SELECT
-            BNO
-             , PNO
-             , TITLE
-             , CONTENT
-             , WRITER
-             , PASSWORD
-             , VIEW_CNT
-             , COMMENT_CNT
-             , REG_DATE
-             , UPDT_DATE
-        FROM
-            (
-                SELECT
-                    ROW_NUMBER() OVER(ORDER BY PNO) AS ROW_NUMBER
-                    , *
-                FROM SPRING_POST
-            ) A
-        WHERE ROW_NUMBER BETWEEN #{offset} AND #{limit} AND BNO = #{bno}
+    <select id="selectPage" statementType="CALLABLE" resultType="com.example.spring.Dto.PostDto" parameterType="Map">
+        { call [dbo].[USP_SEARCH_POST_WITH_CONDITION_SPRING] (#{bno}, #{type}, #{keyword}, #{offset}, #{limit}) }
     </select>
 
     <update id="increaseViewCnt" parameterType="int">
@@ -71,6 +55,7 @@
             ISNULL(COUNT (*), 0) AS COUNT
         FROM SPRING_POST
         WHERE BNO = #{bno}
+        AND DELETE_FLAG = 'N'
     </select>
 
     <insert id="insert" parameterType="com.example.spring.Dto.PostDto" useGeneratedKeys="true" keyProperty="pno">
@@ -78,8 +63,11 @@
                                  , TITLE
                                  , CONTENT
                                  , WRITER
-                                 , PASSWORD )
-        VALUES ( #{bno}, #{title}, #{content}, #{writer}, #{password})
+                                 , PASSWORD
+                                 , SECRET_CHECK
+                                 , COMMENT_CHECK
+                                 )
+        VALUES ( #{bno}, #{title}, #{content}, #{writer}, #{password}, #{secret_check}, #{comment_check})
     </insert>
 
     <update id="update">
@@ -87,13 +75,17 @@
         SET
             TITLE = #{title},
             CONTENT = #{content},
+            SECRET_CHECK = #{secret_check},
+            COMMENT_CHECK = #{comment_check},
             UPDT_DATE = GETDATE()
         WHERE PNO = #{pno} AND BNO = #{bno}
     </update>
 
     <delete id="delete">
-        DELETE FROM SPRING_POST
-        WHERE PNO = #{PNO} AND BNO = #{BNO}
+        UPDATE SPRING_POST
+        SET DELETE_FLAG = 'Y'
+            , UPDT_DATE = GETDATE()
+        WHERE PNO = #{pno} AND BNO = #{bno}
     </delete>
 
 </mapper>

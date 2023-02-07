@@ -100,13 +100,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> selectPage(int limit, int offset, int bno) {
+    public List<PostDto> selectPage(int limit, int offset, int bno, int type, String keyword) {
 
         // limit & offest 값
         Map map = new HashMap();
         map.put("limit", limit);
         map.put("offset", offset);
         map.put("bno", bno);
+        map.put("type", bno);
+        map.put("keyword", bno);
 
         List<PostDto> postDtoList = postMapper.selectPage(map);
 
