@@ -107,8 +107,8 @@ public class PostServiceImpl implements PostService {
         map.put("limit", limit);
         map.put("offset", offset);
         map.put("bno", bno);
-        map.put("type", bno);
-        map.put("keyword", bno);
+        map.put("type", type);
+        map.put("keyword", keyword);
 
         List<PostDto> postDtoList = postMapper.selectPage(map);
 

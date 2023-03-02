@@ -10,4 +10,5 @@ public class AttachmentDto {
     private String file_name;
     private String file_origin_name;
     private String storage_name;
+    private String image;
 }

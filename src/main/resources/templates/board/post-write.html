@@ -48,14 +48,14 @@
                 </div>
             </div>
             <article class="check-list">
-                <input type="checkbox" id="secret-check" name="secret_check">
+                <input type="checkbox" id="secret-check" th:value="0" name="secret_check">
                 <label for="secret-check">
                     비밀글 기능
                 </label>
                 <span class="secret-check-info">
                     <i class="fa-sharp fa-solid fa-circle-info"></i>&nbsp;&nbsp;비밀글 : 관리자만 글을 읽을 수 있도록 설정합니다.
                 </span>
-                <input type="checkbox" id="comment-allow-check" name="comment_check" checked>
+                <input type="checkbox" id="comment-allow-check" name="comment_check" th:value="1" checked>
                 <label for="comment-allow-check">댓글 허용</label>
                 <span class="secret-check-info"><i class="fa-sharp fa-solid fa-circle-info"></i>&nbsp;&nbsp;
                     댓글허용 : 다른 사용자가 댓글을 달 수 있게합니다.

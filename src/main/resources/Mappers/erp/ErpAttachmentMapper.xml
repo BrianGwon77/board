@@ -16,6 +16,7 @@
              , UPDT_DATE
         FROM SPRING_ATTACHMENT
         WHERE DELETE_FLAG = 'N'
+
     </sql>
 
     <select id="selectListByPost" resultType="com.example.spring.Dto.AttachmentDto" parameterType="int">

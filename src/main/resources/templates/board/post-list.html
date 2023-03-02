@@ -18,27 +18,29 @@
     <section class="post-list">
         <table class="post-table">
             <thead class="thead">
-                <th>글번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
-                <th>조회수</th>
+            <th>글번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
             </thead>
             <tbody>
-                <tr th:each="postDto : ${postDtoList}">
-                    <td th:text="${postDto.pno}"></td>
-                    <td th:onclick="|location.href='@{/board/read(bno=${postDto.bno}, pno=${postDto.pno})}'|" class="title-td"><p>[[${postDto.title}]] ([[${postDto.comment_cnt}]])</p></td>
-                    <td th:text="${postDto.writer}"></td>
-                    <td th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${postDto.view_cnt}"></td>
-                </tr>
-                <tr th:if="${pageDto.totalCount} <= 0">
-                    <td colspan="5">등록된 게시글이 존재하지 않습니다.</td>
-                </tr>
+            <tr th:each="postDto : ${postDtoList}">
+                <td th:text="${postDto.pno}"></td>
+                <td th:onclick="|location.href='@{/board/read(bno=${postDto.bno}, pno=${postDto.pno})}'|"
+                    class="title-td"><p>[[${postDto.title}]] ([[${postDto.comment_cnt}]])</p></td>
+                <td th:text="${postDto.writer}"></td>
+                <td th:text="${#dates.format(postDto.reg_date, 'yyyy-MM-dd')}"></td>
+                <td th:text="${postDto.view_cnt}"></td>
+            </tr>
+            <tr th:if="${postDtoList.size()} <= 0">
+                <td colspan="5">조회된 게시글이 존재하지 않습니다.</td>
+            </tr>
             </tbody>
         </table>
         <article class="btn-list">
-            <button class="register-btn" onclick="location.href='/board/write'"><i class="fa-solid fa-pen"></i>&nbsp;글쓰기</button>
+            <button class="register-btn" onclick="location.href='/board/write'"><i class="fa-solid fa-pen"></i>&nbsp;글쓰기
+            </button>
         </article>
     </section>
     <section>
@@ -52,16 +54,19 @@
         </div>
     </section>
     <secion>
-        <div class="search-box">
-            <select id="search-condition" class="search-condition">
-                <option value="0">제목</option>
-                <option value="1">내용</option>
-                <option value="2">제목+내용</option>
-                <option value="3">댓글</option>
-            </select>
-            <input type="text" class="search-keyword">
-            <input type="button" th:value="검색" th:onclick="|location.href='@{/board/list(bno=${#request.getParameter('bno')})}'|">
-        </div>
+        <form th:method="GET" th:action="@{/board/list}">
+            <div class="search-box">
+                <select id="search-condition" class="search-condition" name="type">
+                    <option value="1">제목</option>
+                    <option value="2">내용</option>
+                    <option value="3">제목+내용</option>
+                    <option value="4">댓글</option>
+                </select>
+                <input type="hidden" th:value="${param.bno}" name="bno">
+                <input type="text" class="search-keyword" name="keyword">
+                <button>검색</button>
+            </div>
+        </form>
     </secion>
 </div>
 <!--<footer class="board-footer">-->

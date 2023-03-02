@@ -45,7 +45,7 @@ public class BoardController {
     public String list(@RequestParam(required = true) int bno,
                        @RequestParam(required = false, defaultValue = "1") int page,
                        @RequestParam(required = false, defaultValue = "10") int pageSize,
-                       @RequestParam(required = false, defaultValue = "0") int type,
+                       @RequestParam(required = false, defaultValue = "1") int type,
                        @RequestParam(required = false, defaultValue = "") String keyword,
                        Model model) {
 
@@ -59,7 +59,7 @@ public class BoardController {
         List<PostDto> postDtoList = postService.selectPage(limit, offset, bno, type, keyword);
 
         // 전체 게시글 갯수
-        int totalCount = postService.selectCount(bno);
+        int totalCount = postDtoList.size();
 
         // 페이징 정보
         PageDto pageDto = new PageDto(page, pageSize, totalCount);
@@ -71,6 +71,36 @@ public class BoardController {
 
     }
 
+    @GetMapping("/list-mobile")
+    public String list_mobile(@RequestParam(required = true) int bno,
+                       @RequestParam(required = false, defaultValue = "1") int page,
+                       @RequestParam(required = false, defaultValue = "10") int pageSize,
+                       @RequestParam(required = false, defaultValue = "1") int type,
+                       @RequestParam(required = false, defaultValue = "") String keyword,
+                       Model model) {
+
+        // 시작 글 번호
+        int offset = (page - 1) * pageSize + 1;
+
+        // 마지막 글 번호
+        int limit = page * pageSize;
+
+        // 해당 페이지의 게시글 목록
+        List<PostDto> postDtoList = postService.selectPage(limit, offset, bno, type, keyword);
+
+        // 전체 게시글 갯수
+        int totalCount = postDtoList.size();
+
+        // 페이징 정보
+        PageDto pageDto = new PageDto(page, pageSize, totalCount);
+
+        model.addAttribute("pageDto", pageDto);
+        model.addAttribute("postDtoList", postDtoList);
+
+        return "/board/mobile-post-list";
+
+    }
+
     @GetMapping("/write")
     public String write(Model model) {
         PostDto postDto = new PostDto();
@@ -79,6 +109,16 @@ public class BoardController {
         model.addAttribute("iconList", iconList);
         model.addAttribute("mode", CREATE);
         return "/board/post-write";
+    }
+
+    @GetMapping("/image")
+    public String image(String content) {
+        return "/board/image-test";
+    }
+
+    @PostMapping("/image.do")
+    public void image_do(String content) {
+        System.out.println("content=" + content);
     }
 
     @PostMapping("/write.do")

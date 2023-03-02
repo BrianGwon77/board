@@ -1,0 +1,124 @@
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>자산정보 조회</title>
+    <link rel="stylesheet" href="/css/asset-style.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>자산정보 조회</h1>
+    </div>
+    <div class="image-section">
+        <img th:src="|data:image/jpg;base64, ${imageString}|">
+    </div>
+    <form id="asset-form" th:object="${assetDto}">
+        <div class="no-section">
+            <h1>자산번호</h1>
+            <input type="text" name="no" placeholder="자산번호" id="no">
+            <button onclick="validation_check()"><i class="fa-solid fa-magnifying-glass"></i>검색</button>
+        </div>
+        <div class="info-section">
+            <div class="name-section item">
+                <h1>자산명</h1>
+                <input type="text" name="no" placeholder="자산명" id="name" th:field="*{name}">
+            </div>
+            <div class="status-div item">
+                <h1>자산상태</h1>
+                <select name="status" th:field="*{status}">
+                    <option th:each="statusCode : ${statusCodeList}"
+                            th:if="${statusCode.pCode eq null || statusCode.pCode eq ''}" th:value="${statusCode.code}">
+                        [[${statusCode.name}]]
+                    </option>
+                </select>
+                <h1>세부상태</h1>
+                <select id="statusDetail" name="statusDetail" th:field="*{statusDetail}">
+                    <option th:each="statusCode : ${statusCodeList}"
+                            th:if="${statusCode.pCode eq assetDto.status}" th:value="${statusCode.code}">
+                        [[${statusCode.name}]]
+                    </option>
+                </select>
+            </div>
+            <div class="dept-div item">
+                <h1>부서</h1>
+                <select name="dept" th:field="*{deptCode}">
+                    <option th:each="deptCode : ${deptCodeList}" th:value="${deptCode.code}">
+                        [[${deptCode.name}]]
+                    </option>
+                </select>
+            </div>
+            <div class="useType-div item">
+                <h1>사용용도</h1>
+                <select name="useType" th:field="*{useType}">
+                    <option th:each="useTypeCode : ${useTypeCodeList}" th:value="${useTypeCode.code}">
+                        [[${useTypeCode.name}]]
+                    </option>
+                </select>
+            </div>
+            <div class="location-div item">
+                <h1>설치위치</h1>
+                <select name="location" th:field="*{location}">
+                    <option th:each="locationCode : ${locationCodeList}" th:value="${locationCode.code}">
+                        [[${locationCode.name}]]
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="button-section">
+            <button><i class="fa-sharp fa-solid fa-check"></i>&nbsp;수정</button>
+            <button><i class="fa-solid fa-xmark"></i>&nbsp;취소</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+
+<script th:inline="javascript">
+    const statusCodeList = [[${statusCodeList}]];
+</script>
+
+<script>
+
+    document.querySelector('#status').addEventListener('change', function(event) {
+
+        let status = document.querySelector('#status').value;
+        let statusDetailElement = document.querySelector('#statusDetail');
+        statusDetailElement.innerHTML = '';
+
+        console.log(status);
+
+        Array.from(statusCodeList)
+            .filter(item => item.pcode == status)
+            .forEach(item => {
+                let option = document.createElement('option');
+                option.setAttribute('value', item.code);
+                option.innerHTML = item.name;
+                statusDetailElement.append(option);
+            });
+
+    })
+
+
+    function validation_check() {
+
+        // validation_check 가 true 인 경우 form 제출
+
+        let no = document.querySelector('#no').value;
+        console.log(no);
+        const regex = '[A-Z]{2}[0-9]{8}$';
+
+        if (no.match(regex) != null)
+            return false;
+        else
+            return true;
+
+    }
+
+</script>

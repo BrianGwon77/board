@@ -37,7 +37,7 @@ public class VideoController {
         File dir = new File(DIR + system);
         List<File> files = Arrays.asList(dir.listFiles());
         return files.stream().map(VideoDto::new).collect(Collectors.toList());
-
+        
     }
 
     @GetMapping(path = "/play/{system}/{fileName}")
@@ -63,6 +63,7 @@ public class VideoController {
 
                 }
             }
+
         };
 
         final HttpHeaders responseHeaders = new HttpHeaders();
@@ -70,7 +71,6 @@ public class VideoController {
         responseHeaders.add("Content-Length", Long.toString(file.length()));
 
         return ResponseEntity.ok().headers(responseHeaders).body(streamingResponseBody);
-
     }
 
     @GetMapping("/download/{system}/{fileName}")
@@ -90,7 +90,9 @@ public class VideoController {
             res.setBufferSize(fSize);
             res.setContentType("application/octet-stream");
             res.setHeader("Content-Disposition", "attachment; filename=" + fileName + ";");
+
             res.setContentLength(fSize);
+
             /** 헤더정보 입력 **/
             FileInputStream in = new FileInputStream(downFile);
             ServletOutputStream out = res.getOutputStream();
@@ -115,6 +117,7 @@ public class VideoController {
                 if (in != null) {
                     in.close();
                 } /** 에러가 나도 Output Flush 와 Close 실행 **/
+
             }
         }
     }

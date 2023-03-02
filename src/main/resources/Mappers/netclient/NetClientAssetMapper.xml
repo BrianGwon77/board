@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.spring.Mapper.netclient.NetClientAssetMapper">
+
+    <resultMap type="java.util.Map" id="imageMap">
+        <result property="image" column="image" javaType="[B" jdbcType="BLOB"/>
+    </resultMap>
+
+    <select id="selectImage" resultMap="imageMap">
+        SELECT
+            c.FileContents AS image
+        FROM tas_asset a
+        INNER JOIN tcm_attach_file b ON a.FileId = b.Id
+        INNER JOIN tcm_attach_file_detail c ON b.Id = c.Id
+        WHERE a.assetNo = #{no}
+    </select>
+
+    <select id="select" resultType="com.example.spring.Dto.AssetDto" parameterType="String">
+        SELECT
+            AssetNo AS no
+            , a.Name AS name
+            , AssetStatus AS status
+            , AssetStatusDetail AS statusDetail
+            , DeptCode AS deptCode
+            , UseType AS useType
+            , Location AS location
+            , unhex(fileContents) AS image
+        FROM tas_asset a
+        INNER JOIN tcm_dept b ON a.DeptId = b.Id
+        LEFT OUTER JOIN tcm_attach_file c ON a.fileId = c.Id
+        LEFT OUTER JOIN tcm_attach_file_detail d ON c.Id = d.Id
+        WHERE assetNo = #{no}
+    </select>
+
+    <select id="selectCodeList" resultType="com.example.spring.Dto.CodeDto" parameterType="String">
+        SELECT
+            Code
+            , pCode
+            , Name
+        FROM tcm_code
+        WHERE CATEGORYID = #{codeType}
+    </select>
+
+    <select id="selectDeptList" resultType="com.example.spring.Dto.CodeDto">
+        SELECT
+            DeptCode Code
+            , DeptPCode pCode
+            , Name
+        FROM tcm_dept
+    </select>
+
+    <update id="update" parameterType="com.example.spring.Dto.AssetDto">
+        UPDATE tas_asset
+        SET
+            AssetStatus = #{status}
+            , AssetStatusDetail = #{statusDetail}
+            , DeptCode = #{deptCode}
+            , UseType = #{useType}
+            , Location = #{location}
+        WHERE AssetNo = #{no}
+    </update>
+
+</mapper>
