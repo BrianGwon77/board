@@ -1,0 +1,56 @@
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>방문정보 리스트</title>
+    <link rel="stylesheet" href="/css/visit-style.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>방문정보 리스트</h1>
+    </div>
+    <div class="condition-div tb-margin">
+        <label>방문자명</label>
+        <input type="text" name="name" id="name">
+        <button class="search-btn" name="search" id="search">
+            <i class="fa-solid fa-magnifying-glass detail"></i>&nbsp;검색
+        </button>
+        <label>업체명</label>
+        <input type="text" name="dept" id="dept" class="tb-margin">
+        <label>방문일시</label>
+        <input type="date" name="start" id="start">
+        <input type="date" name="end" id="end">
+    </div>
+    <div class="visit-div">
+        <table class="visit-table tb-margin">
+            <thead class="visit-thead">
+                <th>번호</th>
+                <th>방문자명</th>
+                <th>소속</th>
+                <th>일시</th>
+                <th>상세</th>
+            </thead>
+            <tbody class="visit-tbody">
+                <tr class="visit-tr" th:each="visitDto : ${visitDtoList}">
+                    <td class="visit-td">[[${visitDto.no}]]</td>
+                    <td class="visit-td">[[${visitDto.name}]]</td>
+                    <td class="visit-td">[[${visitDto.dept}]]</td>
+                    <td class="visit-td">[[${#dates.format(visitDto.enter_date, 'yyyy-MM-dd')}]]</td>
+                    <td class="visit-td"><i class="fa-solid fa-magnifying-glass detail"></i></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="btn-div tb-margin">
+        <button class="register-btn" th:onclick="|location.href='@{/visit/register}'|"><i class="fa-solid fa-pen"></i>&nbsp;방문 등록</button>
+    </div>
+</div>
+</body>
+</html>

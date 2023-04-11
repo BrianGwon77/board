@@ -57,7 +57,7 @@
         SET
             AssetStatus = #{status}
             , AssetStatusDetail = #{statusDetail}
-            , DeptCode = #{deptCode}
+            , DeptId = (SELECT id FROM TCM_DEPT WHERE DeptCode = #{deptCode})
             , UseType = #{useType}
             , Location = #{location}
         WHERE AssetNo = #{no}

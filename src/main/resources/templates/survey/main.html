@@ -1,0 +1,151 @@
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>설문조사 데이터</title>
+    <link rel="stylesheet" href="/css/survey.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <div class="side-bar">
+        <h4>항목 리스트</h4>
+        <div th:id="question" class="question-div"></div>
+    </div>
+    <div class="main">
+        <div th:id="button" class="header-div">
+            <input type="button" value="저장" onclick="save()"></button>
+            <input type="button" value="취소"></button>
+        </div>
+        <div th:id="response" class="response-div"></div>
+        <div th:id="button" class="footer-div">
+            <input type="button" value="추가" onclick="addRow()"></button>
+            <input type="button" value="삭제"></button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script th:inline="javascript">
+    let survey = [[${survey}]];
+    let currentQuestion = null;
+</script>
+
+<script>
+
+    function updateUI() {
+        let questionDiv = document.querySelector('#question');
+        for (let i=0; i<survey.questionList.length; i++) {
+            let button = document.createElement('button');
+            button.innerHTML = survey.questionList[i].title;
+            button.setAttribute('class', 'question');
+            // input.addEventListener('change', function(event) {
+            //     survey.questionList[i].title = event.target.value;
+            // });
+            button.addEventListener('click', function(event) {
+
+                currentQuestion = i;
+                let responseDiv = document.querySelector('#response');
+                let questionDiv = document.querySelector('#question');
+                removeAllChildNodes(questionDiv);
+                removeAllChildNodes(responseDiv);
+                for (let j=0; j<survey.questionList[i].responseList.length; j++) {
+
+                    /** 체크박스, 텍스트 박스, 배점란 담는 DIV **/
+                    let responseItem = document.createElement('div');
+
+                    let checkboxInput = document.createElement('input');
+                    checkboxInput.setAttribute('type', 'checkbox');
+
+                    let textInput = document.createElement('input');
+                    textInput.setAttribute('type', 'text');
+                    textInput.setAttribute('class', 'title');
+                    textInput.setAttribute('value', survey.questionList[i].responseList[j].title);
+                    textInput.addEventListener('change', function(event) {
+                        survey.questionList[i].responseList[j].title = event.target.value;
+                    });
+
+                    let pointInput = document.createElement('input');
+                    pointInput.setAttribute('type', 'text');
+                    pointInput.setAttribute('class', 'point');
+                    pointInput.setAttribute('value', survey.questionList[i].responseList[j].point);
+                    pointInput.addEventListener('change', function(event) {
+                        survey.questionList[i].responseList[j].point = event.target.value;
+                    });
+
+                    responseItem.appendChild(checkboxInput);
+                    responseItem.appendChild(textInput);
+                    responseItem.appendChild(pointInput);
+
+                    responseDiv.appendChild(responseItem);
+
+                }
+            });
+
+            questionDiv.appendChild(button);
+        }
+    }
+
+    $(document).ready(function () {
+        updateUI();
+    });
+
+    function removeAllChildNodes(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+
+    function save() {
+        $.ajax({
+            type : "POST",            // HTTP method type(GET, POST) 형식이다.
+            url : "/survey/save",      // 컨트롤러에서 대기중인 URL 주소이다.
+            data : JSON.stringify(survey),            // Json 형식의 데이터이다.
+            dataType: "json",
+            contentType: "application/json",
+            success : function(res){ // 비동기통신의 성공일경우 success콜백으로 들어옵니다. 'res'는 응답받은 데이터이다.
+                // 응답코드 > 0000
+                alert(res.code);
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+                alert("통신 실패.")
+            }
+        });
+    }
+
+    function addRow() {
+
+        let responseDiv = document.querySelector('#response');
+
+        let numberOfResponse = (currentQuestion != null) ? survey.questionList[currentQuestion].responseList.length : 0 ;
+
+        let newResponse = {
+            id: null,
+            title: '새로운 응답',
+            point: null,
+        }
+
+        survey.questionList[currentQuestion].responseList.push(newResponse);
+
+        updateUI();
+
+        // let input = document.createElement('input');
+        // input.setAttribute('type', 'text');
+        // input.setAttribute('value', '새로운 응답');
+        // input.addEventListener('change', function(event) {
+        //     survey.questionList[currentQuestion].responseList[numberOfResponse].title = event.target.value;
+        // });
+        // responseDiv.appendChild(input);
+
+    }
+
+    function removeRow() {
+
+    }
+
+</script>

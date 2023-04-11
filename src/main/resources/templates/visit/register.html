@@ -1,0 +1,35 @@
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>방문정보 등록</title>
+    <link rel="stylesheet" href="/css/visit-style.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <meta name="viewport" content="height=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>방문정보 등록</h1>
+    </div>
+    <form id="visit-form" class="visit-form" th:object="${visitDto}" th:method="POST" th:action="@{/visit/register.do}">
+        <h1>방문자명</h1>
+        <input type="text" name="name" placeholder="방문자명" id="name" th:value="*{name}">
+        <h1>업체명</h1>
+        <input type="text" name="dept" placeholder="업체명" id="dept" th:value="*{dept}">
+        <h1>연락처</h1>
+        <input type="text" name="contact" placeholder="연락처" id="contact" th:value="*{contact}">
+        <h1>사유</h1>
+        <input type="text" name="reason" placeholder="사유" id="reason" th:value="*{reason}">
+        <div class="btn-list">
+            <button type="submit"><i class="fa-sharp fa-solid fa-check"></i>&nbsp;등록</button>
+            <button type="submit"><i class="fa-solid fa-xmark"></i>&nbsp;취소</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

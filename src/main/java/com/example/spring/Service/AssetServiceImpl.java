@@ -23,7 +23,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public int updateAsset(AssetDto assetDto) {
-        return 0;
+        return netClientAssetMapper.update(assetDto);
     }
 
     @Override
@@ -39,9 +39,12 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public String selectImage(String no) {
         Map<String, Object> resultMap = netClientAssetMapper.selectImage(no);
-        byte[] arr = (byte[]) resultMap.get("image");
-        byte[] base64Arr = Base64.getEncoder().encode(arr);
-        return new String(base64Arr);
-    }
+        if (resultMap != null) {
+            byte[] arr = (byte[]) resultMap.get("image");
+            byte[] base64Arr = Base64.getEncoder().encode(arr);
+            return new String(base64Arr);
+        }
 
+        return "";
+    }
 }

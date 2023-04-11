@@ -92,7 +92,7 @@ public class VideoController {
             res.setHeader("Content-Disposition", "attachment; filename=" + fileName + ";");
 
             res.setContentLength(fSize);
-
+            
             /** 헤더정보 입력 **/
             FileInputStream in = new FileInputStream(downFile);
             ServletOutputStream out = res.getOutputStream();

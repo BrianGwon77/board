@@ -119,6 +119,23 @@ button {
     padding-left: 1rem;
 }
 
+.result-section h1 {
+    backgroud-color: F38B3C;
+    color: black;
+}
+
+.result-section {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    padding: 5px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 @media screen and (max-width: 768px) {
     body {
         margin: 0px;

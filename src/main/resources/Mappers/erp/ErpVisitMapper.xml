@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.spring.Mapper.erp.ErpVisitMapper">
+
+    <select id="select" resultType="com.example.spring.Dto.VisitDto">
+        SELECT
+            NO
+            , NAME
+            , DEPT
+            , CONTACT
+            , REASON
+            , ENTER_DATE
+            , LEAVE_DATE
+        FROM SPRING_VISIT
+        WHERE DELETE_FLAG = 'N'
+        AND NO = #{no}
+    </select>
+
+    <select id="selectList" statementType="CALLABLE" resultType="com.example.spring.Dto.VisitDto" parameterType="com.example.spring.Dto.SearchConditionDto">
+            {
+                CALL [dbo].[USP_VISIT_SPRING] (
+                    #{start},
+                    #{end},
+                    #{name},
+                    #{dept}
+                )
+            }
+    </select>
+
+    <select id="insert" parameterType="com.example.spring.Dto.VisitDto">
+        INSERT INTO
+            SPRING_VISIT
+        (
+            NAME
+            , DEPT
+            , CONTACT
+            , REASON
+            , ENTER_DATE
+        )
+        VALUES (
+            #{name}
+            , #{dept}
+            , #{contact}
+            , #{reason}
+            , GETDATE()
+        )
+    </select>
+
+    <update id="update" parameterType="com.example.spring.Dto.VisitDto">
+        UPDATE
+            SPRING_VISIT
+        SET
+            name = #{name},
+            dept = #{dept},
+            contact = #{contact},
+            reason = #{reason},
+            enter_date = #{enter_date},
+            leave_date = #{leave_date}
+        WHERE NO = #{no}
+    </update>
+
+    <update id="delete" parameterType="com.example.spring.Dto.VisitDto">
+        UPDATE
+            SPRING_VISIT
+        SET
+            delete_flag = 'Y'
+        WHERE NO = #{no}
+    </update>
+
+</mapper>

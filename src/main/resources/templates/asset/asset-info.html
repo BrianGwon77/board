@@ -19,11 +19,11 @@
     <div class="image-section">
         <img th:src="|data:image/jpg;base64, ${imageString}|">
     </div>
-    <form id="asset-form" th:object="${assetDto}">
+    <form id="asset-form" th:object="${assetDto}" th:method="POST" th:action="@{/update.do}">
         <div class="no-section">
             <h1>자산번호</h1>
-            <input type="text" name="no" placeholder="자산번호" id="no">
-            <button onclick="validation_check()"><i class="fa-solid fa-magnifying-glass"></i>검색</button>
+            <input type="text" name="no" placeholder="자산번호" id="no" th:value="*{no}">
+            <button onclick="search(event)"><i class="fa-solid fa-magnifying-glass"></i>검색</button>
         </div>
         <div class="info-section">
             <div class="name-section item">
@@ -105,19 +105,61 @@
 
     })
 
+    function search(event) {
 
-    function validation_check() {
+        event.preventDefault();
 
-        // validation_check 가 true 인 경우 form 제출
+        /** 자산번호 유효성 검사 **/
+        if (!validation_check('no')) {
+            alert('올바른 자산번호를 입력해주세요.');
+        }
 
-        let no = document.querySelector('#no').value;
-        console.log(no);
-        const regex = '[A-Z]{2}[0-9]{8}$';
+        else {
+            let no = document.querySelector('#no').value;
+            window.location.href = '/assetInfo?no=' + no;
+        }
 
-        if (no.match(regex) != null)
-            return false;
-        else
-            return true;
+    }
+
+    function confirm(event) {
+
+        event.preventDefault();
+
+        if (validation_check('no') && validation_check('name')) {
+            document.querySelector('#asset-form').submit();
+        }
+
+        else {
+            alert('올바른 자산정보를 입력해주세요.');
+        }
+
+    }
+
+    function cancel(event) {
+        event.preventDefault();
+        window.location.href = '/assetInfo';
+    }
+
+    function validation_check(field) {
+
+        if (field == 'no') {
+            let no = document.querySelector('#no').value;
+            const regex = '[A-Z]{2}[0-9]{8}$';
+
+            if (no.match(regex) != null)
+                return true;
+            else
+                return false;
+        }
+
+        else if (field == 'name') {
+            let name = document.querySelector('#name').value;
+
+            if (name.length == 0)
+                return false;
+            else
+                return true;
+        }
 
     }
 

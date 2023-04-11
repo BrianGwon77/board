@@ -1,5 +1,6 @@
 package com.example.spring.Controller;
 
+import com.example.spring.Dto.AjaxReturnValue;
 import com.example.spring.Dto.AssetDto;
 import com.example.spring.Dto.CodeDto;
 import com.example.spring.Service.AssetService;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -27,7 +30,7 @@ public class AssetController {
     private String locationCode;
 
     @GetMapping("/assetInfo")
-    public String assetInfo(@RequestParam(defaultValue = "NB00001036") String no, Model model){
+    public String assetInfo(@RequestParam(defaultValue = "") String no, Model model){
 
         /** Retrieve code information (status, useType, location, dept) **/
         List<CodeDto> statusCodeList = assetService.selectCodeList(statusCode);
@@ -50,5 +53,21 @@ public class AssetController {
         model.addAttribute("assetDto", assetDto == null ? new AssetDto() : assetDto);
 
         return "/asset/asset-info";
+    }
+
+
+
+    @PostMapping("/update.do")
+    public String update(AssetDto assetDto, Model model) {
+
+        int rowCnt = assetService.updateAsset(assetDto);
+
+        if (rowCnt > 0)
+            model.addAttribute("message", "업데이트 완료");
+        else
+            model.addAttribute("message", "업데이트 실패");
+
+        return "/asset/result";
+
     }
 }

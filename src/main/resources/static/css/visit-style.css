@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Song+Myung&display=swap');
+
+html {
+    font-size: 14px;
+}
+
+body {
+    font-family: 'Song Myung', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+input[type=date] {
+    border: 1px solid #F38B3C;
+}
+
+.visit-table {
+    width: 100%;
+    margin-top: 1rem;
+    font-size: 1.5rem;
+}
+
+.tb-margin {
+    margin: 1rem 0rem 1rem 0rem;
+}
+
+.visit-table tr {
+    border: 1px solid #F38B3C;
+}
+
+.visit-tr td {
+    text-align: center;
+}
+
+.detail {
+    cursor: pointer;
+}
+
+.visit-tr td:nth-child(1) {
+    width: 10%;
+}
+
+.visit-tr td:nth-child(2) {
+    width: 20%;
+}
+
+.visit-tr td:nth-child(3) {
+    width: 20%;
+}
+
+.visit-tr td:nth-child(4) {
+    width: 40%;
+}
+
+.visit-tr td:nth-child(5) {
+    width: 10%;
+}
+
+input[type=text] {
+    border: 1px solid #F38B3C;
+}
+
+.container {
+    margin: 0px;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #F38B3C;
+}
+
+select {
+    font-size: 14px;
+    font-family: 'Song Myung', serif;
+}
+
+button,
+input[type=button] {
+    cursor: pointer;
+    background-color: #F38B3C;
+    border: 0px;
+    color: white;
+    width: 100px;
+    height: 30px;
+    font-weight: 550;
+}
+
+h1 {
+    display: inline-block;
+    font-size: 18px;
+}
+
+.header {
+    overflow: hidden;
+    text-align: center;
+    background-color: #F38B3C;
+    color: white;
+}
+
+.header h1 {
+    font-size: 30px;
+}
+
+.visit-thead {
+    position: sticky;
+    height: 30px;
+    line-height: 30px;
+    background-color: white;
+    top: 0;
+}
+
+.condition-div label {
+    text-align: center;
+    display: inline-block;
+    width: 20%;
+}
+
+.condition-div input[type=text] {
+    display: inline-block;
+    width: 60%;
+}
+
+.visit-div {
+    height: 500px;
+    overflow-y: scroll;
+}
+
+.register-btn {
+    float: right;
+}
+
+.search-btn {
+    float: right;
+    height: 7rem;
+    border: 1px solid #F38B3C;
+    background-color: #F38B3C;
+    color: white;
+    font-weight: 600;
+}
+
+.btn-list {
+    float: right;
+}
+
+.visit-form h1 {
+    display: inline-block;
+    text-align: center;
+    width: 30%;
+    padding: 1rem;
+}
+
+.visit-form input[type=text] {
+    display: inline-block;
+    width: 65%;
+    padding: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        margin: 0px;
+        width: 100vw;
+        height: 100vh;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    body {
+        margin: auto;
+        width: 70vw;
+        height: 70vh;
+    }
+}
