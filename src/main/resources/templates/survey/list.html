@@ -1,0 +1,87 @@
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>설문조사 리스트</title>
+    <link rel="stylesheet" href="/css/survey.css">
+    <link rel="icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+    <meta http-equiv="Compatible" content="no-cache"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<body>
+<div class="column-container sans-font">
+    <div class="header">
+        <input type="button" class="basic-btn" value="추가" onclick="addRow(QUESTION)">
+    </div>
+    <div class="survey-list">
+        <div class="default-survey-item survey-item">
+            <i class="fa-solid fa-circle-plus fa-3x" style="color: #F38B3C"></i>
+        </div>
+        <div th:each="survey : ${surveyList}" class="survey-item">
+            <div class="emoji-header"
+                 style="display: flex; flex-direction: row; justify-content: space-between; align-items:center; width:100%; height: 50%;">
+                <i class="fa-regular fa-face-smile basic-color" ></i>
+                <i class="fa-regular fa-trash-can basic-color" onclick="deleteSurvey(this)" th:id="${survey.id}"}></i>
+            </div>
+            <div style="height: 50%;">
+                <a class="non-outline" th:href="@{/survey/update/{surveyId}(surveyId = ${survey.id})}">[[${survey.title}]]</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+        function deleteSurvey(target) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let surveyId = target.getAttribute('id');
+                    $.ajax({
+                        type: "POST",            // HTTP method type(GET, POST) 형식이다.
+                        url: "/survey/delete",      // 컨트롤러에서 대기중인 URL 주소이다.
+                        data: surveyId,           // Json 형식의 데이터이다.
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (res) { // 비동기통신의 성공일경우 success콜백으로 들어옵니다. 'res'는 응답받은 데이터이다.
+                            if (res.result) {
+                                Swal.fire(
+                                    '설문조사를 삭제하였습니다.',
+                                    'The Survey has been deleted.',
+                                    'success'
+                                ).then((result) => {
+                                    location.reload();
+                                })
+                            }
+                            else {
+                                Swal.fire(
+                                    '설문조사를 삭제하지 못하였습니다.',
+                                    'Failed to delete the survey.',
+                                    'fail'
+                                )
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) { // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+                            alert("서버와의 통신에 실패하였습니다.")
+                        }
+                    });
+                }
+            })
+        }
+</script>

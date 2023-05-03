@@ -1,116 +1,289 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Song+Myung&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500&display=swap');
+
+.sans-font {
+!important;
+    font-family: 'Noto Serif KR', serif;
+}
 
 .body {
     width: 100vw;
     height: 100vh;
 }
 
-.container {
+.row-container {
     width: 100%;
     height: 100%;
-    font-family: "Noto Sans KR", sans-serif;
     display: flex;
     flex-direction: row;
 }
 
-.side-bar {
-    width: 20%;
+.column-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.side-bar h4 {
-    margin: 0px;
-    background-color: #F38B3C;
-    color: white;
-    height: 50px;
-    line-height: 50px;
-    font-size : 24px;
+/** 좌측 사이드바 부분 css **/
+.side-bar {
+    width: 20%;
+    height: 100%;
+    border: 1px solid lightgray;
+    padding: 5px;
+}
+
+.side-bar .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+    line-height: 10px;
+    color: #42526E;
+}
+
+/** 메인 부분 css **/
+.main {
+    border: 1px solid lightgray;
+    width: 80%;
+}
+
+/** 질문 문항 css **/
+.question-list {
+    height: 75%;
+    padding: 20px;
+    border-bottom: 1px solid lightgray;
+    overflow-y: auto;
     text-align: center;
 }
 
-.main {
-    border: 1px solid #F38B3C;
-    width: 90%;
-}
-
-.response-div {
+.question-item {
     display: flex;
-    align-items: center;
+    flex-direction: row;
     justify-content: center;
-    flex-direction: column;
-    height: 80%;
+    align-items: center;
+    background-color: white;
+    color: #42526E;
     width: 100%;
 }
 
-.title {
-    display: inline;
+.bg-selected {
+    background-color: #DEEBFF;
+}
+
+.question-item > .fa-trash {
+    visibility: hidden;
+    cursor: pointer;
+}
+
+.question-item:hover > .fa-trash {
+    visibility: visible;
+    transition: 0.8s;
+}
+
+.question-item:hover > .question {
+    background-color: lightgray;
+}
+
+
+.question {
+    width: 100%;
+    height: 2rem;
+    margin: 0.5rem;
+    font-size: 14px;
+!important;
+    border: 0px;
+}
+
+.question:hover {
+    cursor: pointer;
+}
+
+/** 버튼 css **/
+.basic-btn {
+    background-color: #F38B3C;
+    border: 0px;
+    color: white;
+    width: 80px;
+    height: 40px;
+    border-radius: 15px;
+    margin: 5px;
+    font-weight: 600
+}
+
+.header-input {
+    border: 0px;
+    font-style: italic;
+    font-weight: 600;
+    width: 50%;
+    font-size: 24px;
+    padding: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.header-input:focus {
+    outline: none;
+}
+
+.basic-input {
     padding: 10px;
-    width: 25rem;
-    border: 1px solid #F38B3C;
-    margin: 3px;
+    border: 1px solid #FAFAFA;
+    background-color: #FAFAFA;
+    width: 50%;
+    display: inline-block;
+    border-radius: 10px;
+}
+
+
+.question-title {
+    text-align: center;
+}
+
+.draggable.dragging {
+    opacity: 0.5;
+}
+
+/** box-shadow : x축, y축, blur, spread **/
+.basic-btn:hover {
+    cursor: pointer;
+    width: 85px;
+    height: 45px;
+    transition: 0.1s;
+    box-shadow: 2px 2px 1px lightgray;
+}
+
+
+input[type=checkbox] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+
+.response-div {
+    height: 70%;
+    width: 100%;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.response-div div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    width: 50%;
+    border: 0px;
+    margin-bottom: 10px;
+}
+
+.input[type=text]:focus::placeholder {
+    color: transparent;
 }
 
 .point {
     display: inline;
     padding: 10px;
     width: 5rem;
-    border: 1px solid #F38B3C;
     margin: 3px;
 }
 
-.question-div {
+.number {
+    color: white;
+    padding: 5px;
+    background-color: #F38B3C;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.main .header-div {
+    height: 10%;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 2rem;
+}
+
+.side-bar .footer-div {
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}
+
+.footer {
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.btn-list {
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/** 설문조사 list.html **/
+.header {
+    height: 10%;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.survey-list {
+    width: 100%;
+    height: 80%;
+    padding-left: 3%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.default-survey-item {
+    box-shadow: 0px 0px 0px 0px;
+}
+
+.survey-item {
+    width: 15%;
+    height: 20%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 5px;
+    box-shadow: 1px 1px 1px 1px lightgray;
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
-}
-
-.question {
-    width: 10rem;
-    height: 2rem;
-    margin: 0.5rem;
-    background-color: #F38B3C;
-    color: white;
-    font-size: 14px;
-    border: 1px solid #F38B3C;
-}
-
-.question:hover {
     cursor: pointer;
-    box-shadow: 0 0 5px orange;
+}
+
+.survey-item:hover {
+    background-color: #c9c9c9;
     transition: 0.5s;
 }
 
-.main input[type=button] {
-    width: 5rem;
-    height: 3rem;
-    margin: 0.3rem;
-    background-color: #F38B3C;
-    color: white;
-    font-size: 14px;
-    border: 0px;
+.non-outline {
+    outline: none;
+    text-decoration: none;
+    color: black;
 }
 
-.main input[type=button]:hover {
-    cursor: pointer;
-    border: 1px solid orange;
-}
-
-.header-div {
-    height: 10%;
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: row;
-    align-items: center;
-    margin-right: 2rem;
-}
-
-.footer-div {
-    height: 10%;
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: row;
-    align-items: center;
-    margin-right: 2rem;
+.basic-color {
+    color: #F38B3C;
 }

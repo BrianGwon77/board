@@ -1,0 +1,80 @@
+<html xmlns:layout="http://www.thymeleaf.org" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>설문조사</title>
+    <link rel="icon" href="/images/favicon.jpg">
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+    <meta http-equiv="Compatible" content="no-cache"/>
+</head>
+
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
+
+<body>
+<div class="container w-50">
+    <div class="row mt-5">
+        <h1>INTOPS 설문조사 페이지</h1>
+        <figcaption class="blockquote-footer">
+            본인의 사업장과 사번을 정확히 확인 후 입력 바랍니다.
+        </figcaption>
+    </div>
+    <div class="row mt-2 border border-secondary p-1">
+        <div class="col-2 d-flex justify-content-center align-items-center">
+            <span class="m-0">소속</span>
+        </div>
+        <div class="col-10">
+            <select class="form-select" aria-label="Default select example">
+                <option selected>Open this select menu</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mt-2 border border-secondary p-1">
+        <div class="col-2 d-flex justify-content-center align-items-center">
+            <span>사번</span>
+        </div>
+        <div class="col-10">
+            <input type="text" class="form-control" placeholder="사번" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        </div>
+    </div>
+    <div class="row mt-2 border border-secondary p-1">
+        <div class="col-2 d-flex justify-content-center align-items-center">
+            <span class="m-0">설문조사</span>
+        </div>
+        <div class="col-10">
+            <select class="form-select" aria-label="Default select example">
+                <option selected>Open this select menu</option>
+                <option th:each="survey : ${surveyList}">[[${survey.title}]]</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-warning mt-2" style="background-color: #F38B3C;">
+            <span style="color: white; font-weight: 500">확인</span>
+        </button>
+    </div>
+</div>
+</body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+
+<script th:inline="javascript">
+
+    let survey = [[${survey}]];
+    let currentQuestion = null;
+
+</script>

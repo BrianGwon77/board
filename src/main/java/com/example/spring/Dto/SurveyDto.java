@@ -1,13 +1,11 @@
 package com.example.spring.Dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 public class SurveyDto {
     private int id;
     private String title;
@@ -15,6 +13,10 @@ public class SurveyDto {
     private String updt_date;
     private String reg_user;
     private String updt_user;
-    private String del_flag;
+    private String delete_flag;
     private List<QuestionDto> questionList;
+
+    public SurveyDto() {
+        questionList = new ArrayList<QuestionDto>();
+    }
 }

@@ -2,7 +2,7 @@
 
 <head>
     <title>설문조사 데이터</title>
-    <link rel="stylesheet" href="/css/survey.css">
+    <link rel="stylesheet" href="/css/survey_org.css">
     <link rel="icon" href="/images/favicon.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
@@ -15,33 +15,38 @@
 <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
         crossorigin="anonymous"></script>
 
-<body>
-<div class="row-container sans-font" style="border: 1px solid lightgray">
-    <div class="side-bar">
-        <div class="title">
-            <span>전체 항목</span>
-        </div>
-        <div th:id="question" class="question-list container">
+<style>
+    .sans {
+    !important; font-family: 'Noto Sans KR', sans-serif;
+    }
+</style>
 
+<body>
+<div class="container sans">
+    <div class="side-bar">
+        <div class="header-div">
+            <h4>질문 리스트</h4>
         </div>
+        <div th:id="question" class="question-div"></div>
         <div class="footer-div">
-            <input type="button" class="basic-btn" value="복사" onclick="copy()">
-            <input type="button" class="basic-btn" value="추가" onclick="addRow(QUESTION)">
+            <input type="button" value="복사" onclick="copy()">
+            <input type="button" value="추가" onclick="addRow(QUESTION)">
         </div>
     </div>
     <div class="main">
         <div th:id="header" class="header-div">
-            <input type="button" class="basic-btn" value="저장" onclick="save()">
-            <input type="button" class="basic-btn" value="취소">
+            <input type="button" value="저장" onclick="save()">
+            <input type="button" value="취소">
         </div>
         <div class="question-title">
-            <input type="text" class="header-input" id="question-title" placeholder="질문을 입력해주세요."></input>
+            <input type="text" id="question-title" placeholder="질문 내용">
         </div>
         <div th:id="response" class="response-div"></div>
-        <div th:id="footer" class="footer">
-            <div class="btn-list">
-                <i class="fa-solid fa-circle-plus" style="color: #F38B3C" onclick="addRow(RESPONSE)">&nbsp;옵션 추가</i>
-            </div>
+        <!--        <div th:id="trash-can" class="garbage-div" style="text-align:center;">-->
+        <!--            <i class="fa-solid fa-trash-can fa-3x" style="color: #F38B3C;"></i>-->
+        <!--        </div>-->
+        <div th:id="footer" class="footer-div">
+            <i class="fa-solid fa-circle-plus fa-2x" style="color: #F38B3C" onclick="addRow(RESPONSE)"></i>
         </div>
     </div>
 </div>
@@ -61,7 +66,7 @@
     const RESPONSE = 1;
 
     function initialize() {
-        let questionNumbering = 0;
+        let questionNumbering = 1;
 
         survey.questionList.forEach(question => {
             question.id = questionNumbering;
@@ -114,19 +119,26 @@
 
             // Create Question Item.
             let questionItem = document.createElement('div');
-            questionItem.setAttribute('class', 'question-item draggable');
-            questionItem.setAttribute('draggable', true);
-            questionItem.setAttribute('id', survey.questionList[i].id);
+
+            // Checkbox
+            /*
+                        let checkboxInput = document.createElement('input');
+                        checkboxInput.setAttribute('type', 'checkbox');
+                        checkboxInput.setAttribute('name', 'questionCheckbox');
+                        checkboxInput.setAttribute('id', survey.questionList[i].id);
+            */
 
             // Button
             let button = document.createElement('button');
-            button.innerHTML = survey.questionList[i].title.substring(0, 5);
+            button.innerHTML = '질문 ' + survey.questionList[i].id;
             button.setAttribute('class', 'question');
+            button.setAttribute('draggable', true);
             button.setAttribute('id', survey.questionList[i].id);
 
             let removeIcon = document.createElement('i');
-            removeIcon.setAttribute('class', 'fa-solid fa-trash');
+            removeIcon.setAttribute('class', 'fa-solid fa-circle-minus');
             removeIcon.setAttribute('id', survey.questionList[i].id);
+            removeIcon.setAttribute('style', 'color: #F38B3C; margin-left: 10px;');
             removeIcon.addEventListener('click', function (event) {
                 deleteRow(QUESTION, event);
             });
@@ -141,10 +153,10 @@
                 // 선택된 질문 번호 저장 - currentQuestion.
                 currentQuestion = i;
 
-                event.target.classList.add('bg-selected');
+                event.target.style.border = '3px solid #ffe600'
                 document.querySelectorAll('.question').forEach((question, index) => {
                         if (index != currentQuestion) {
-                            question.classList.remove('bg-selected')
+                            question.style.border = '1px solid #F38B3C';
                         }
                     }
                 )
@@ -155,8 +167,7 @@
                 let questionTitleInput = document.createElement('input');
                 questionTitleInput.setAttribute('type', 'text');
                 questionTitleInput.setAttribute('id', 'question-title');
-                questionTitleInput.setAttribute('class', 'header-input');
-                questionTitleInput.setAttribute('placeholder', '질문을 입력해주세요.');
+                questionTitleInput.setAttribute('placeholder', '질문 내용');
                 questionTitleInput.setAttribute('value', survey.questionList[i].title);
 
                 questionTitleInput.addEventListener('change', function (event) {
@@ -195,7 +206,7 @@
 
                     let textInput = document.createElement('input');
                     textInput.setAttribute('type', 'text');
-                    textInput.setAttribute('class', 'title basic-input');
+                    textInput.setAttribute('class', 'title text-input');
                     textInput.setAttribute('placeholder', '내용');
                     textInput.setAttribute('value', survey.questionList[i].responseList[j].title);
                     textInput.addEventListener('change', function (event) {
@@ -204,7 +215,7 @@
 
                     let pointInput = document.createElement('input');
                     pointInput.setAttribute('type', 'number');
-                    pointInput.setAttribute('class', 'point basic-input');
+                    pointInput.setAttribute('class', 'point text-input');
                     pointInput.setAttribute('placeholder', '점수');
                     pointInput.setAttribute('value', survey.questionList[i].responseList[j].point);
                     pointInput.addEventListener('change', function (event) {
@@ -212,9 +223,9 @@
                     });
 
                     let removeIcon = document.createElement('i');
-                    removeIcon.setAttribute('class', 'fa-solid fa-trash');
+                    removeIcon.setAttribute('class', 'fa-solid fa-circle-minus fa-2x');
                     removeIcon.setAttribute('id', survey.questionList[i].responseList[j].id);
-                    removeIcon.setAttribute('style', 'margin-left: 10px; color: lightgray;');
+                    removeIcon.setAttribute('style', 'color: #F38B3C; margin-left: 10px;');
                     removeIcon.addEventListener('click', function (event) {
                         deleteRow(RESPONSE, event);
                     });
@@ -234,9 +245,7 @@
             questionItem.appendChild(removeIcon);
             questionDiv.appendChild(questionItem);
         }
-
         document.querySelectorAll('.question').item(currentQuestion).click();
-        initializeDragEvent();
     }
 
     $(document).ready(function () {
@@ -266,26 +275,6 @@
         });
     }
 
-    function getMax(type) {
-        let max = 0;
-        if (type == RESPONSE) {
-            if (survey.questionList[currentQuestion].responseList != null) {
-                survey.questionList[currentQuestion].responseList.forEach(response => {
-                    if (max < response.id) max = response.id;
-                });
-            }
-        }
-        /** QUESTION TYPE **/
-        else if (type == QUESTION) {
-            if (survey.questionList != null) {
-                survey.questionList.forEach(quesiton => {
-                    if (max < quesiton.id) max = quesiton.id;
-                });
-            }
-        }
-        return max;
-    }
-
     /** 행 추가 함수 **/
     function addRow(type) {
 
@@ -294,17 +283,30 @@
             let responseDiv = document.querySelector('#response');
             let numberOfResponse = (currentQuestion != null) ? survey.questionList[currentQuestion].responseList.length : 0;
 
+            let max = 0;
+            if (survey.questionList[currentQuestion].responseList != null) {
+                survey.questionList[currentQuestion].responseList.forEach(response => {
+                    if (max < response.id) max = response.id;
+                });
+            }
             let newResponse = {
-                id: getMax(RESPONSE) + 1,
-                title: '제목없음',
+                id: max + 1,
+                title: '',
                 point: '',
             }
             survey.questionList[currentQuestion].responseList.push(newResponse);
-        } else if (type == QUESTION) {
+        }
+        else if (type == QUESTION) {
             let questionDiv = document.querySelector('#question');
+            let max = 0;
+            if (survey.questionList != null) {
+                survey.questionList.forEach(quesiton => {
+                    if (max < quesiton.id) max = quesiton.id;
+                });
+            }
             let newQuestion = {
-                id: getMax(QUESTION) + 1,
-                title: '제목없음',
+                id: max + 1,
+                title: '',
                 responseList: [{
                     id: 1,
                     title: '',
@@ -332,67 +334,27 @@
 
     }
 
-    let draggables, containers;
-    containers = document.querySelectorAll(".container");
+    // function deleteRow(type) {
+    //     if (type == 'response') {
+    //         let checkboxList = document.getElementsByName('responseCheckbox');
+    //         Array.from(checkboxList)
+    //             .filter(checkbox => checkbox.checked == true)
+    //             .forEach(checkbox => {
+    //                 let id = checkbox.getAttribute('id');
+    //                 survey.questionList[currentQuestion].responseList = survey.questionList[currentQuestion].responseList.filter(response => response.id != id);
+    //             })
+    //     }
+    //     if (type == 'question') {
+    //         let checkboxList = document.getElementsByName('questionCheckbox');
+    //         Array.from(checkboxList)
+    //             .filter(checkbox => checkbox.checked == true)
+    //             .forEach(checkbox => {
+    //                 let id = checkbox.getAttribute('id');
+    //                 survey.questionList = survey.questionList.filter(question => question.id != id);
+    //             })
+    //     }
+    //     updateUI();
+    // }
 
-    containers.forEach(container => {
-        container.addEventListener("dragover", e => {
-            e.preventDefault();
-        })
-        container.addEventListener("drop", e => {
-            e.preventDefault();
-            const afterElement = getDragAfterElement(container, e.clientY);
-            let draggingIndex = e.dataTransfer.getData("text/plain");
-            if (afterElement.offset != Number.NEGATIVE_INFINITY) {
-                let targetIndex = afterElement.element.getAttribute('id');
-                [survey.questionList[draggingIndex], survey.questionList[targetIndex]] = [survey.questionList[targetIndex], survey.questionList[draggingIndex]];
-                currentQuestion = targetIndex;
-            }
-            else {
-                let targetIndex = getMax(QUESTION);
-                [survey.questionList[draggingIndex], survey.questionList[targetIndex]] = [survey.questionList[targetIndex], survey.questionList[draggingIndex]];
-                currentQuestion = targetIndex;
-            }
-            updateUI();
-        });
-    });
-
-    function initializeDragEvent() {
-
-        draggables = document.querySelectorAll(".draggable");
-        draggables.forEach(draggable => {
-
-            draggable.addEventListener("dragstart", (e) => {
-                draggable.classList.add("dragging");
-                e.dataTransfer.clearData();
-                e.dataTransfer.setData("text/plain", e.target.getAttribute('id'));
-            });
-
-            draggable.addEventListener("dragend", () => {
-                draggable.classList.remove("dragging");
-            });
-
-        });
-
-    }
-
-    function getDragAfterElement(container, y) {
-        const draggableElements = [
-            ...container.querySelectorAll(".draggable:not(.dragging)"),
-        ];
-        return draggableElements.reduce(
-            // closest - 누적값, child - 현재 요소.
-            (closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - (box.top + box.height / 2);
-                if (offset < 0 && offset > closest.offset) {
-                    return {offset: offset, element: child};
-                } else {
-                    return closest;
-                }
-            },
-            {offset: Number.NEGATIVE_INFINITY},
-        );
-    }
 
 </script>

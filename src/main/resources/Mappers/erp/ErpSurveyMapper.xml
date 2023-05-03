@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.spring.Mapper.erp.ErpSurveyMapper">
+
+    <resultMap id="surveyResultMap" type="com.example.spring.Dto.SurveyDto">
+        <result property="id" column="id"></result>
+        <result property="title" column="title"></result>
+        <result property="reg_date" column="reg_date"></result>
+        <result property="updt_date" column="updt_date"></result>
+        <result property="reg_user" column="reg_user"></result>
+        <result property="updt_user" column="updt_user"></result>
+        <result property="delete_flag" column="delete_flag"></result>
+        <collection property="questionList" column="id" javaType="List" ofType="com.example.spring.Dto.QuestionDto" select="selectQuestionBySurvey"></collection>
+    </resultMap>
+
+    <resultMap id="questionResultMap" type="com.example.spring.Dto.QuestionDto">
+        <result property="id" column="id"></result>
+        <result property="title" column="title"></result>
+        <collection property="responseList" column="id" javaType="List" ofType="com.example.spring.Dto.ResponseDto" select="selectResponseByQuestion"></collection>
+    </resultMap>
+
+    <select id="selectSurveyList" resultMap="surveyResultMap" parameterType="int">
+        SELECT
+            *
+        FROM SPRING_SURVEY
+    </select>
+
+    <select id="selectSurvey" resultMap="surveyResultMap" parameterType="int">
+        SELECT
+            *
+        FROM SPRING_SURVEY
+        WHERE ID = #{id}
+    </select>
+
+    <insert id="insertSurvey" parameterType="com.example.spring.Dto.SurveyDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO SPRING_SURVEY
+        (
+            TITLE
+            , REG_USER
+            , UPDT_USER
+        )
+        VALUES
+        (
+            '설문조사 TEST'
+            , #{reg_user}
+            , #{updt_user}
+        )
+    </insert>
+
+    <delete id="deleteSurvey"  parameterType="int">
+        DELETE
+        FROM SPRING_SURVEY
+        WHERE ID = #{id}
+    </delete>
+
+    <select id="selectQuestionBySurvey" resultMap="questionResultMap" parameterType="int">
+        SELECT
+            *
+        FROM SPRING_QUESTION
+        WHERE SURVEY_ID = #{id}
+    </select>
+
+    <select id="selectResponseByQuestion" resultType="com.example.spring.Dto.ResponseDto" parameterType="int">
+        SELECT
+            *
+        FROM SPRING_RESPONSE
+        WHERE QUESTION_ID = #{id}
+    </select>
+
+    <insert id="insertQuestion" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.Map">
+        INSERT INTO SPRING_QUESTION
+        (
+            SURVEY_ID
+            , TITLE
+        )
+        VALUES
+        (
+            #{survey_id}
+            , #{question.title}
+        )
+    </insert>
+
+    <insert id="insertResponseList">
+        INSERT INTO SPRING_RESPONSE
+        (
+            QUESTION_ID
+            , TITLE
+            , POINT
+        )
+        VALUES
+        <foreach collection="responseList" item="item" separator=",">
+            (
+                #{question_id}
+                , #{item.title}
+                , #{item.point}
+            )
+        </foreach>
+    </insert>
+
+</mapper>
